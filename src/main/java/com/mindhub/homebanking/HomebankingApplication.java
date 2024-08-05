@@ -14,7 +14,7 @@ public class HomebankingApplication {
 		SpringApplication.run(HomebankingApplication.class, args);
 	}
 
-	@Bean
+	@Bean //Indicamos que esto se va aejecutar primero cuando corra la aplicación
 	public CommandLineRunner initData(ClientRepository clientRepository){
 		return (args) -> {
 			clientRepository.save((new Client("Melba", "Morel", "melba@mindhub.com")));
@@ -22,3 +22,12 @@ public class HomebankingApplication {
 		};
 	}
 }
+
+// Aqui no necesitamos configurar nada porque estamos invirtiendo el control a SpringBoot, él  se encarga de hacer las
+// configuraciones
+
+// CommandLineRunner es una interfaz de Spring Boot que bajo la anotacion @Bean se va a ejecutar cuando arranque la aplicacion
+// CommandLineRunner es un singleton, patrón de diseño que se va a ejecutar solo una vez cada que se corra la aplicación
+// CommandLineRunner recibe por parametro la instancia de "ClientRepository" para poder usar los metodos "save" de "JpaRepository"
+// En este caso cada vez que arranque la aplicacion se van a crear y guardar dos objetos "Client" en la base de datos.
+//
