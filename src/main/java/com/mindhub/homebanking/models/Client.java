@@ -1,10 +1,11 @@
 package com.mindhub.homebanking.models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity   // Le indicamos a Spring que genere una tabla en la base de datos, que almacenara nuestros objetos
 public class Client {
@@ -17,8 +18,16 @@ public class Client {
     private String lastName;
     private String email;
 
-    //----------------------------Métodos Constructor------------------------------------
+    //--------------------------------------------------------------------------------------
+    // Trayendo a la persona JPA automaticamente deberia traerme la o las cuentas asociadas
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    //@JsonManagedReference
+    Set<Account> accounts = new HashSet<>();
+    //--------------------------------------------------------------------------------------
 
+
+
+    //----------------------------Métodos Constructor------------------------------------
     // Es necesario el constructor vacio para que "Hibernate" reserve un espacio en memoria
     public Client() { }
 
@@ -60,6 +69,19 @@ public class Client {
     public Long getId() {
         return id;
     }
+
+    public Set<Account> getAccounts() {
+        return accounts;
+    }
+    //--------------------------------------------------------------------------------------
+
+
+    //--------------------------------------------------------------------------------------
+    // Nos permite conectar al Client con Account
+    public void addAccount(Account account){
+        account.setOwner(this);
+        accounts.add(account);
+    }
     //--------------------------------------------------------------------------------------
 
 
@@ -70,6 +92,7 @@ public class Client {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", accounts=" + accounts +
                 '}';
     }
 }
