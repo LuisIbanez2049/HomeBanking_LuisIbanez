@@ -82,7 +82,6 @@ public class ClientController {
 
 
     //------------------------------SERVLET------------------------------------------------------
-
     //crud para actualizar un cliente
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
