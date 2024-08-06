@@ -5,17 +5,20 @@ package com.mindhub.homebanking.controllers;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import java.util.Map;
 
 import java.util.List;
 
 @RestController // Indicamos que la clase actua como un controlador REST, es decir que va a manejar solicitudes HTTP siguiendo el protocolo REST
-                  // y que cada método devuelve un objeto
 @RequestMapping("/api/clients") // Defino la ruta base de acceso a la que este controlador va a escuchar
                                 // Le pongo "api" para seguir la conveción
 public class ClientController {
 
-    @Autowired // Indico que esta clase se va a conectar/cablear con "ClientRepository" para inyuectar los metodos de "JpaRepository"
+    @Autowired // Indico que esta clase se va a conectar/cablear con "ClientRepository" para inyectar los metodos de "JpaRepository"
     private ClientRepository clientRepository;
 
 
@@ -41,7 +44,7 @@ public class ClientController {
 
     //------------------------------SERVLET------------------------------------------------------
     @GetMapping("/{id}")
-    public Client getClientById(@PathVariable Long id){
+    public Client getClientById(@PathVariable Long id){ // Parametro de ruta que se pasa por la URL http para obtener un valor de la variable
         return clientRepository.findById(id).orElse(null);
     }
     //------------------------------------------------------------------------------------
@@ -74,6 +77,61 @@ public class ClientController {
     }
     //------------------------------------------------------------------------------------
 
+
+
+
+
+    //------------------------------SERVLET------------------------------------------------------
+
+    //crud para actualizar un cliente
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateClient(@PathVariable Long id, @RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
+        Client client = clientRepository.findById(id).orElse(null);
+
+        if (client == null) {
+            return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
+        }
+      client.setFirstName(firstName);
+      client.setLastName(lastName);
+      client.setEmail(email);
+
+        Client updatedClient = clientRepository.save(client);
+        return new ResponseEntity<>(updatedClient, HttpStatus.OK);
+    }
+    //------------------------------------------------------------------------------------
+
+
+
+
+    //------------------------------SERVLET------------------------------------------------------
+    //ResponseEntity<Client> me devuelve el objeto y respuesta http con un codigo de estado
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<?> partialUpdateClient(
+            @PathVariable Long id,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String email) {
+
+        Client client = clientRepository.findById(id).orElse(null);
+
+        if (client == null) {
+            return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
+        }
+
+        if (firstName != null) {
+            client.setFirstName(firstName);
+        }
+        if (lastName != null) {
+            client.setLastName(lastName);
+        }
+        if (email != null) {
+            client.setEmail(email);
+        }
+
+        Client updatedClient = clientRepository.save(client);
+        return new ResponseEntity<>(updatedClient, HttpStatus.OK);
+    }
+    //------------------------------------------------------------------------------------
 
 
 }

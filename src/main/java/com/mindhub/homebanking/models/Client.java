@@ -56,13 +56,18 @@ public class Client {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public Long getId() {
+        return id;
+    }
     //--------------------------------------------------------------------------------------
 
 
     @Override
     public String toString() {
         return "Client{" +
-                "firstName='" + firstName + '\'' +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 '}';
