@@ -2,8 +2,11 @@ package com.mindhub.homebanking;
 
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
+import com.mindhub.homebanking.models.Transaction;
+import com.mindhub.homebanking.models.TransactionType;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.repositories.TransactionRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,7 +26,7 @@ public class HomebankingApplication {
 
 	@Bean //Indicamos a spring que lo tiene que tener en cuanta a la hora de arrancar la aplicaion
 	// esto se va aejecutar primero cuando corra la aplicación
-	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository){
+	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository){
 		return (args) -> {
 
 			LocalDateTime dateNow = LocalDateTime.now();
@@ -36,31 +39,86 @@ public class HomebankingApplication {
 			clientRepository.save(luis);
 
 			//----------------------------------------------------------------------------------------
-			Account account1 = new Account("VIN001", dateNow, 5000);
-			Account account2 = new Account("VIN002", dateNow.plusDays(1), 7500);
+			Account account1Melba = new Account("VIN001", dateNow, 5000);
+			Account account2Melba = new Account("VIN002", dateNow.plusDays(1), 7500);
 
-			account1.setOwner(melba);
-			account2.setOwner(melba);
+			account1Melba.setOwner(melba);
+			account2Melba.setOwner(melba);
 
-			melba.addAccount(account1);
-			melba.addAccount(account2);
+			melba.addAccount(account1Melba);
+			melba.addAccount(account2Melba);
 
-			accountRepository.save(account1);
-			accountRepository.save(account2);
+			accountRepository.save(account1Melba);
+			accountRepository.save(account2Melba);
 			//----------------------------------------------------------------------------------------
 
 			//----------------------------------------------------------------------------------------
-			Account account3 = new Account("VIN003", dateNow, 2000);
-			Account account4 = new Account("VIN004", dateNow.minusMonths(1), 12000);
+			Account account1Luis = new Account("VIN003", dateNow, 2000);
+			Account account2Luis = new Account("VIN004", dateNow.minusMonths(1), 12000);
 
-			account3.setOwner(luis);
-			account4.setOwner(luis);
+			account1Luis.setOwner(luis);
+			account2Luis.setOwner(luis);
 
-			luis.addAccount(account3);
-			luis.addAccount(account4);
+			luis.addAccount(account1Luis);
+			luis.addAccount(account2Luis);
 
-			accountRepository.save(account3);
-			accountRepository.save(account4);
+			accountRepository.save(account1Luis);
+			accountRepository.save(account2Luis);
+
+
+			//-----------Agregar transacciones a las cuentas de Melva --------------------------------------------------
+//			Transaction transaction1MelvaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
+//			account1Melba.addTransaction(transaction1MelvaAccount1);
+//			transactionRepository.save(transaction1MelvaAccount1);
+			Transaction transaction1MelbaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
+			Transaction transaction2MelbaAccount1 = new Transaction(TransactionType.DEBIT, 500, "Groceries", dateNow.minusDays(1));
+			Transaction transaction3MelbaAccount1 = new Transaction(TransactionType.CREDIT, 1500, "Salary", dateNow.minusDays(2));
+
+			account1Melba.addTransaction(transaction1MelbaAccount1);
+			account1Melba.addTransaction(transaction2MelbaAccount1);
+			account1Melba.addTransaction(transaction3MelbaAccount1);
+
+			transactionRepository.save(transaction1MelbaAccount1);
+			transactionRepository.save(transaction2MelbaAccount1);
+			transactionRepository.save(transaction3MelbaAccount1);
+
+
+			Transaction transaction1MelbaAccount2 = new Transaction(TransactionType.DEBIT, 800, "Electricity Bill", dateNow);
+			Transaction transaction2MelbaAccount2 = new Transaction(TransactionType.CREDIT, 2500, "Freelance Work", dateNow.minusDays(3));
+			Transaction transaction3MelvaAccount2 = new Transaction(TransactionType.DEBIT, 700, "Internet Bill", dateNow.minusDays(4));
+
+			account2Melba.addTransaction(transaction1MelbaAccount2);
+			account2Melba.addTransaction(transaction2MelbaAccount2);
+			account2Melba.addTransaction(transaction3MelvaAccount2);
+
+			transactionRepository.save(transaction1MelbaAccount2);
+			transactionRepository.save(transaction2MelbaAccount2);
+			transactionRepository.save(transaction3MelvaAccount2);
+
+			// -----------Agregar transacciones a las cuentas de Luis --------------------------------------------------
+			Transaction transaction1LuisAccount1 = new Transaction(TransactionType.CREDIT, 1000, "Gift", dateNow);
+			Transaction transaction2LuisAccount1 = new Transaction(TransactionType.DEBIT, 1200, "Car Maintenance", dateNow.minusDays(1));
+			Transaction transaction3LuisAccount1 = new Transaction(TransactionType.CREDIT, 4000, "Bonus", dateNow.minusDays(2));
+
+			account1Luis.addTransaction(transaction1LuisAccount1);
+			account1Luis.addTransaction(transaction2LuisAccount1);
+			account1Luis.addTransaction(transaction3LuisAccount1);
+
+			transactionRepository.save(transaction1LuisAccount1);
+			transactionRepository.save(transaction2LuisAccount1);
+			transactionRepository.save(transaction3LuisAccount1);
+
+			Transaction transaction1LuisAccount2 = new Transaction(TransactionType.DEBIT, 800, "Restaurant", dateNow);
+			Transaction transaction2LuisAccount2 = new Transaction(TransactionType.CREDIT, 5000, "Investment Return", dateNow.minusDays(3));
+			Transaction transaction3LuisAccount2 = new Transaction(TransactionType.DEBIT, 600, "Subscription", dateNow.minusDays(4));
+
+			account2Luis.addTransaction(transaction1LuisAccount2);
+			account2Luis.addTransaction(transaction2LuisAccount2);
+			account2Luis.addTransaction(transaction3LuisAccount2);
+
+			transactionRepository.save(transaction1LuisAccount2);
+			transactionRepository.save(transaction2LuisAccount2);
+			transactionRepository.save(transaction3LuisAccount2);
 		};
 	}
 }

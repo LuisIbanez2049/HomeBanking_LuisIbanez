@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Account {
@@ -26,6 +28,13 @@ public class Account {
    // @JsonBackReference
     private Client owner;
     //---------------------------------------------------------------------------------------
+
+
+    //--------------------------------------------------------------------------------------
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
+    Set<Transaction> transactions = new HashSet<>();
+    //--------------------------------------------------------------------------------------
+
 
 
     //----------------------------------------Metodos Constructores--------------------------
@@ -75,8 +84,23 @@ public class Account {
     public void setOwner(Client owner) {
         this.owner = owner;
     }
+
+    public void setTransactions(Set<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public Set<Transaction> getTransactions() {
+        return transactions;
+    }
     //------------------------------------------------------------------------------------
 
+
+
+    //------------------------------------------------------------------------------------
+    public void addTransaction(Transaction transaction){
+        transaction.setAccount(this);
+        this.transactions.add(transaction);
+    }
 
     @Override
     public String toString() {
@@ -85,6 +109,7 @@ public class Account {
                 ", number='" + number + '\'' +
                 ", creationDate=" + creationDate +
                 ", balance=" + balance +
+                ", transactions=" + transactions +
                 '}';
     }
 }

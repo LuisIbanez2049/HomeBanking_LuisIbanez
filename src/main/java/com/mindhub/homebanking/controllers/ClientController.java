@@ -203,6 +203,7 @@ public class ClientController {
         // Eliminar las cuentas asociadas
         client.getAccounts().forEach(accountRepository::delete);
 
+
         // Eliminar el cliente
         clientRepository.delete(client);
         return new ResponseEntity<>("Client with ID " + id + " was deleted.", HttpStatus.OK);
