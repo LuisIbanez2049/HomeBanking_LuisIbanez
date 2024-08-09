@@ -1,12 +1,7 @@
 package com.mindhub.homebanking;
 
-import com.mindhub.homebanking.models.Account;
-import com.mindhub.homebanking.models.Client;
-import com.mindhub.homebanking.models.Transaction;
-import com.mindhub.homebanking.models.TransactionType;
-import com.mindhub.homebanking.repositories.AccountRepository;
-import com.mindhub.homebanking.repositories.ClientRepository;
-import com.mindhub.homebanking.repositories.TransactionRepository;
+import com.mindhub.homebanking.models.*;
+import com.mindhub.homebanking.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 @SpringBootApplication
 public class HomebankingApplication {
@@ -26,7 +22,7 @@ public class HomebankingApplication {
 
 	@Bean //Indicamos a spring que lo tiene que tener en cuanta a la hora de arrancar la aplicaion
 	// esto se va aejecutar primero cuando corra la aplicación
-	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository){
+	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository, LoanRepository loanRepository, ClienLoanRepository clienLoanRepository){
 		return (args) -> {
 
 			LocalDateTime dateNow = LocalDateTime.now();
@@ -67,9 +63,6 @@ public class HomebankingApplication {
 
 
 			//-----------Agregar transacciones a las cuentas de Melva --------------------------------------------------
-//			Transaction transaction1MelvaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
-//			account1Melba.addTransaction(transaction1MelvaAccount1);
-//			transactionRepository.save(transaction1MelvaAccount1);
 			Transaction transaction1MelbaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
 			Transaction transaction2MelbaAccount1 = new Transaction(TransactionType.DEBIT, 500, "Groceries", dateNow.minusDays(1));
 			Transaction transaction3MelbaAccount1 = new Transaction(TransactionType.CREDIT, 1500, "Salary", dateNow.minusDays(2));
@@ -119,6 +112,41 @@ public class HomebankingApplication {
 			transactionRepository.save(transaction1LuisAccount2);
 			transactionRepository.save(transaction2LuisAccount2);
 			transactionRepository.save(transaction3LuisAccount2);
+
+
+			//--------------------------------Crear Prestamos
+			Loan mortage = new Loan("Mortgage", 500000, Arrays.asList(12,24,36,48,60));
+			Loan personal = new Loan("Personal", 100000, Arrays.asList(6,12,24));
+			Loan automotive = new Loan("Automotive", 300000, Arrays.asList(6,12,24,36));
+
+			loanRepository.save(mortage);
+			loanRepository.save(personal);
+			loanRepository.save(automotive);
+
+			//-----------Loan de Melva----------------------------------------------------
+			ClientLoan clientLoan1 = new ClientLoan(400000,60);
+			melba.addClientLoan(clientLoan1);
+			mortage.addClientLoan(clientLoan1);
+			clienLoanRepository.save(clientLoan1);
+
+			ClientLoan clientLoan2 = new ClientLoan(50000,12);
+			melba.addClientLoan(clientLoan2);
+			mortage.addClientLoan(clientLoan2);
+			clienLoanRepository.save(clientLoan2);
+
+
+			//-----------Loan de Luis----------------------------------------------------
+			ClientLoan clientLoan3 = new ClientLoan(100000,24);
+			luis.addClientLoan(clientLoan3);
+			mortage.addClientLoan(clientLoan3);
+			clienLoanRepository.save(clientLoan3);
+
+			ClientLoan clientLoan4 = new ClientLoan(200000,36);
+			luis.addClientLoan(clientLoan4);
+			mortage.addClientLoan(clientLoan4);
+			clienLoanRepository.save(clientLoan4);
+
+
 		};
 	}
 }

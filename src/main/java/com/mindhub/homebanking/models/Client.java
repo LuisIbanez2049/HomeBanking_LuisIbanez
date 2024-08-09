@@ -4,7 +4,10 @@ package com.mindhub.homebanking.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.awt.font.TextHitInfo;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity   // Le indicamos a Spring que genere una tabla en la base de datos, que almacenara nuestros objetos
@@ -23,6 +26,9 @@ public class Client {
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     //@JsonManagedReference
     Set<Account> accounts = new HashSet<>();
+
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
+    private List<ClientLoan> clientLoans = new ArrayList<>();
     //--------------------------------------------------------------------------------------
 
 
@@ -73,6 +79,14 @@ public class Client {
     public Set<Account> getAccounts() {
         return accounts;
     }
+
+    public List<ClientLoan> getClientLoans() {
+        return clientLoans;
+    }
+
+    public void setClientLoans(List<ClientLoan> clientLoans) {
+        this.clientLoans = clientLoans;
+    }
     //--------------------------------------------------------------------------------------
 
 
@@ -81,6 +95,11 @@ public class Client {
     public void addAccount(Account account){
         account.setOwner(this);
         accounts.add(account);
+    }
+
+    public void addClientLoan(ClientLoan clientLoan){
+        this.clientLoans.add(clientLoan);
+        clientLoan.setClient(this);
     }
     //--------------------------------------------------------------------------------------
 
