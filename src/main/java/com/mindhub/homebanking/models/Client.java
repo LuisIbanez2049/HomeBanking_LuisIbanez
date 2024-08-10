@@ -1,10 +1,8 @@
 package com.mindhub.homebanking.models;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.awt.font.TextHitInfo;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -20,10 +18,11 @@ public class Client {
     private String firstName;
     private String lastName;
     private String email;
+    private boolean active = true;
 
     //--------------------------------------------------------------------------------------
     // Trayendo a la persona JPA automaticamente deberia traerme la o las cuentas asociadas
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     //@JsonManagedReference
     Set<Account> accounts = new HashSet<>();
 
@@ -87,13 +86,21 @@ public class Client {
     public void setClientLoans(List<ClientLoan> clientLoans) {
         this.clientLoans = clientLoans;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
     //--------------------------------------------------------------------------------------
 
 
     //--------------------------------------------------------------------------------------
     // Nos permite conectar al Client con Account
     public void addAccount(Account account){
-        account.setOwner(this);
+        account.setClient(this);
         accounts.add(account);
     }
 

@@ -1,10 +1,7 @@
 package com.mindhub.homebanking.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -19,21 +16,18 @@ public class Account {
     private LocalDateTime creationDate;
     private double balance;
 
-    //---------------------------------Relacion entre "Account" and "Client"-------------------
-    // Indico que esta clase va a tener una relacion de muchos a uno, osea muchas cuentas van a pertenecer a un cliente
-    // "FetchType.EAGER" le dice a JPA que cuando se cargue una cuenta en la base de datos, se cargue junto con el dueño de esa cuanta
+    //---------------------------------Relacion entre "Account" and "Client"-----------------------------------------------------------
+    // Indico que esta clase va a tener una relacion de muchos a uno con "client", osea muchas cuentas van a pertenecer a un cliente
+    // Con "FetchType.EAGER" indico que cuando solicite una cuenta, este va a venir automaticamente junto con el cliente que tiene asocidado
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "owner_id") // Indio que va a crear una columna en la tabla con el nombre "owner_id"
-    //@JsonIgnore
-   // @JsonBackReference
-    private Client owner;
-    //---------------------------------------------------------------------------------------
+    @JoinColumn(name = "client_id") // Indio que va a crear una columna en la tabla con el nombre "owner_id"
+    private Client client;
 
-
-    //--------------------------------------------------------------------------------------
+    //----------------------------Relacion entre "Account" and "transaction"-----------------------------------------
+    // Con "FetchType.EAGER" indico que cuando solicite una cuenta, este va a venir automaticamente junto con el set de transacciones que tiene asociado
     @OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
     Set<Transaction> transactions = new HashSet<>();
-    //--------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------------
 
 
 
@@ -77,12 +71,12 @@ public class Account {
         return id;
     }
 
-    public Client getOwner() {
-        return owner;
+    public Client getClient() {
+        return client;
     }
 
-    public void setOwner(Client owner) {
-        this.owner = owner;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
     public void setTransactions(Set<Transaction> transactions) {

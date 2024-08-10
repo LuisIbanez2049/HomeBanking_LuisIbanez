@@ -7,10 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 @SpringBootApplication
@@ -38,8 +35,8 @@ public class HomebankingApplication {
 			Account account1Melba = new Account("VIN001", dateNow, 5000);
 			Account account2Melba = new Account("VIN002", dateNow.plusDays(1), 7500);
 
-			account1Melba.setOwner(melba);
-			account2Melba.setOwner(melba);
+			account1Melba.setClient(melba);
+			account2Melba.setClient(melba);
 
 			melba.addAccount(account1Melba);
 			melba.addAccount(account2Melba);
@@ -52,8 +49,8 @@ public class HomebankingApplication {
 			Account account1Luis = new Account("VIN003", dateNow, 2000);
 			Account account2Luis = new Account("VIN004", dateNow.minusMonths(1), 12000);
 
-			account1Luis.setOwner(luis);
-			account2Luis.setOwner(luis);
+			account1Luis.setClient(luis);
+			account2Luis.setClient(luis);
 
 			luis.addAccount(account1Luis);
 			luis.addAccount(account2Luis);

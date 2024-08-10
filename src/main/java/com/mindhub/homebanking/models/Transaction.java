@@ -1,23 +1,31 @@
 package com.mindhub.homebanking.models;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private double amount;
     private String description;
     private LocalDateTime dateTime = LocalDateTime.now();
+
+    // Con "@Enumerated" Indico que la propiedad "type" va a ser guardada como un campo numerico en la base de datos
+    // y con "STRING" digo que en vez de almacenar el numero de la posicion del enum, me almacene el texto que hay en esa posicion en la base de datos
+    // para que sea mas entendible
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
     //---------------------------------Relacion entre "Transaction" and "Account"-------------------
-    @ManyToOne(fetch = FetchType.EAGER)
+    // Con "@ManyToOne" indico que Transaction va a tener una relacion de muchos a uno con Account (Muchas transacciones van a pertenecer a una cuenta)
+    //Con "@JoinColumn" indico que a la tabla, que contiene las transacciones en la base de datos, le voy a agregar una columna con el nombre "account_id"
+    // la cual va a contener las las id de las cuentas a las que les pertenece esa transaccion
+    // Si no pongo la anotacion "@JoinColumn" la columna va a tener el nombre que le asigna la base de datos por defecto
+    @ManyToOne(fetch = FetchType.EAGER) // Con ".EAGER" indico que cuando solicite una transaccion, esta va a venir junto con la cuenta asociada automáticamente
     @JoinColumn(name = "account_id")
     private Account account;
     //---------------------------------------------------------------------------------------
@@ -26,7 +34,6 @@ public class Transaction {
 
     //---------------------Constructor-----------------------------------------------
     public Transaction() {}
-
 
     public Transaction(TransactionType type, double amount, String description, LocalDateTime dateTime) {
         this.type = type;

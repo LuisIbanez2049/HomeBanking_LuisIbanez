@@ -1,12 +1,12 @@
 package com.mindhub.homebanking.dtos;
-
 import com.mindhub.homebanking.models.Client;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+// Armo un DTO para transferis datos, en este caso todos los datos del cliente que reciba por parametro el constructor de este DTO
+// Este cliente ya va a estar previamente creado, ya existe
 public class ClientDTO {
     private Long id;
     private String firstName;
@@ -16,7 +16,10 @@ public class ClientDTO {
 
     private List<ClientLoanDTO> loans = new ArrayList<>();
 
+    // El constructor de ClientDTO recibe por parametro un objeto ya creado de tipo Client para poder acceder a los valores de las propiedades de client
+    // a traves de sus metodos accesores getters
     public ClientDTO(Client client) {
+    // mediante el objeto client a traves de su metodo accesor "getId()" accedo al valor de su propiedad id y ese valor le asigno a la propiedad id de esta clase
         this.id = client.getId();
         this.firstName = client.getFirstName();
         this.lastName = client.getLastName();
