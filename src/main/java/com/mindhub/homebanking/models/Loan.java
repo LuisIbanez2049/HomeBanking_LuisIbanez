@@ -14,10 +14,12 @@ public class Loan {
     private String name;
     private double maxAmount;
 
-    @ElementCollection
-    @Column(name = "payments")
-    private List<Integer> payments = new ArrayList<>();
-
+    //-----------------------------------------------------------------------------
+    // Uso @ElementCollection cuendo quiero relacionar una clase con una coleccion de elementos simples que van a estar en una tabla secundaria en la base de datos
+    @ElementCollection // Indico que la coleccion "payments" es una lista de valores simples que se almacenara en una tabla secundaria
+    @Column(name = "payments") // Indico que los valores de "payments" se almacenaran en un columna llamada "payments" en la tabla secundaria
+    private List<Integer> payments = new ArrayList<>(); // Declaro e inicializo la propiedad "payments" que va a ser una colleccion de tipo List<Integer>
+    //-----------------------------------------------------------------------------
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<ClientLoan> clientLoans = new ArrayList<>();

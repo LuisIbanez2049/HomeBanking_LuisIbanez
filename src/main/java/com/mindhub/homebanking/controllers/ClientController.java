@@ -32,9 +32,15 @@ public class ClientController {
 
     @GetMapping("/")  // Indico que este servlet va a recibir una petición con el método "get" asociado a la ruta "/"
     public ResponseEntity<List<ClientDTO>> getAllActiveClients() {
-        List<ClientDTO> clientDTOS = clientRepository.findAll().stream()
-                .filter(client -> client.isActive()) // Filtra los clientes activos
-                .map(ClientDTO::new)
+        //List<Client> Me devuelve una lista de Client porque en "clientRepository" indique que trabaje con Client
+        List<ClientDTO> clientDTOS = clientRepository.findAll()
+                // Utilizo el método stream() para acceder a los metodos de orden superior. En este caso es "filter" y "map"
+                .stream()
+                // Filtro solo los clientes cuya propiedad "active" sea true  || Mediante el metodo "isActive()" accesdo al valor. Me devuleve un "Stream<Client>"
+                .filter(client -> client.isActive())
+                // Recorro cada cliente que este activo y por cada uno genero un ClientDTO. Me devuelve un Stream<ClientDTO>"
+                .map(client -> new ClientDTO(client))
+                // Agarro el Stream<Client> y lo convierto a una lista porque la variable "clientDTOS" es de tipo List
                 .collect(Collectors.toList());
         return new ResponseEntity<>(clientDTOS, HttpStatus.OK);
     }

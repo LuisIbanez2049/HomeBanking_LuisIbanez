@@ -128,19 +128,19 @@ public class HomebankingApplication {
 
 			ClientLoan clientLoan2 = new ClientLoan(50000,12);
 			melba.addClientLoan(clientLoan2);
-			mortage.addClientLoan(clientLoan2);
+			personal.addClientLoan(clientLoan2);
 			clienLoanRepository.save(clientLoan2);
 
 
 			//-----------Loan de Luis----------------------------------------------------
 			ClientLoan clientLoan3 = new ClientLoan(100000,24);
 			luis.addClientLoan(clientLoan3);
-			mortage.addClientLoan(clientLoan3);
+			personal.addClientLoan(clientLoan3);
 			clienLoanRepository.save(clientLoan3);
 
 			ClientLoan clientLoan4 = new ClientLoan(200000,36);
 			luis.addClientLoan(clientLoan4);
-			mortage.addClientLoan(clientLoan4);
+			automotive.addClientLoan(clientLoan4);
 			clienLoanRepository.save(clientLoan4);
 
 
