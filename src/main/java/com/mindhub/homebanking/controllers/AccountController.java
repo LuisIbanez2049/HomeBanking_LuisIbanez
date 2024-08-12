@@ -22,14 +22,14 @@ public class AccountController {
     @GetMapping("/")
     // Maneja las solicitudes GET a la ruta base "/" para obtener todos los clientes.
     public List<AccountDTO> getAllClients() {
-        return accountRepository.findAll().stream().map(AccountDTO::new).collect(toList());
+        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(toList());
 
     }
 
     @GetMapping("/{id}")
     // Maneja las solicitudes GET para obtener un cliente por ID.
     public ResponseEntity<AccountDTO> getById(@PathVariable Long id) {
-        return accountRepository.findById(id).map(AccountDTO::new) // Convertir Client a ClientDTO
+        return accountRepository.findById(id).map(account -> new AccountDTO(account)) // Convertir Client a ClientDTO
                 .map(ResponseEntity::ok) // Si está presente, devolver 200 OK con el ClientDTO
                 .orElse(ResponseEntity.notFound().build());
     }

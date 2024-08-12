@@ -83,7 +83,9 @@ public class ClientController {
         client.setFirstName(firstName);
         client.setLastName(lastName);
         client.setEmail(email);
+        // Guardo al cliente en la base de datos y me devuelve la entidad guardada con informacion adicional generada por la base de datos como la "id"
         Client savedClient = clientRepository.save(client);
+        // Con ese "client" que guarde en la base de datos que ahora tiene una id, creo un ClientDTO
         ClientDTO clientDTO = new ClientDTO(savedClient);
         return new ResponseEntity<>(clientDTO, HttpStatus.CREATED);
     }

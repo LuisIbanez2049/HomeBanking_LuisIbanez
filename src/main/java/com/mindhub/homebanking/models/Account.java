@@ -31,7 +31,7 @@ public class Account {
 
 
 
-    //----------------------------------------Metodos Constructores--------------------------
+    //----------------------------------------Metodos Constructores--------------------------------------
     public Account(){}
 
     public Account(String number, LocalDateTime creationDate, double balance) {
@@ -39,7 +39,7 @@ public class Account {
         this.creationDate = creationDate;
         this.balance = balance;
     }
-    //---------------------------------------------------------------------------------------
+    //---------------------------------------------------------------------------------------------------
 
 
     //---------------------------------Metodos Getter y Setter------------------------------------------

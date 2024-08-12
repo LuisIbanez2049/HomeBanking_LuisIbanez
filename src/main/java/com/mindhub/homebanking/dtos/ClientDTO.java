@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// Armo un DTO para transferis datos, en este caso todos los datos del cliente que reciba por parametro el constructor de este DTO
+// Armo un DTO para transferir datos, en este caso todos los datos del cliente que reciba por parametro el constructor de este DTO
 // Este cliente ya va a estar previamente creado, ya existe
 public class ClientDTO {
     private Long id;
@@ -25,10 +25,10 @@ public class ClientDTO {
         this.lastName = client.getLastName();
         this.email = client.getEmail();
         this.accounts = client.getAccounts().stream()
-                .map(AccountDTO::new)
+                .map(account -> new AccountDTO(account))
                 .collect(Collectors.toSet());
 
-        this.loans = client.getClientLoans().stream().map(ClientLoanDTO::new).collect(Collectors.toList());
+        this.loans = client.getClientLoans().stream().map(clientLoan -> new ClientLoanDTO(clientLoan)).collect(Collectors.toList());
     }
 
     // Getters

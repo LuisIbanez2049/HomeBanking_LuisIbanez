@@ -23,7 +23,6 @@ public class Client {
     //--------------------------------------------------------------------------------------
     // Trayendo a la persona JPA automaticamente deberia traerme la o las cuentas asociadas
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
-    //@JsonManagedReference
     Set<Account> accounts = new HashSet<>();
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
@@ -71,9 +70,7 @@ public class Client {
         this.email = email;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id;}
 
     public Set<Account> getAccounts() {
         return accounts;
