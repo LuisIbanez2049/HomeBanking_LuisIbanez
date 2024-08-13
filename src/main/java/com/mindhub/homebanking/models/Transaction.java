@@ -1,7 +1,6 @@
 package com.mindhub.homebanking.models;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Entity
 public class Transaction {

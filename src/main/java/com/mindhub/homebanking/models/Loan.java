@@ -22,7 +22,7 @@ public class Loan {
     private List<Integer> payments = new ArrayList<>(); // Declaro e inicializo la propiedad "payments" que va a ser una colleccion de tipo List<Integer>
     //-----------------------------------------------------------------------------
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "loan", fetch = FetchType.EAGER)
     private List<ClientLoan> clientLoans = new ArrayList<>();
 
 

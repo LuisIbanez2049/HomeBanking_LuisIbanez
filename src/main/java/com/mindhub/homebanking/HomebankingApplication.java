@@ -19,7 +19,12 @@ public class HomebankingApplication {
 
 	@Bean //Indicamos a spring que lo tiene que tener en cuanta a la hora de arrancar la aplicaion
 	// esto se va aejecutar primero cuando corra la aplicación
-	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository, LoanRepository loanRepository, ClienLoanRepository clienLoanRepository){
+	public CommandLineRunner initData(ClientRepository clientRepository,
+									  AccountRepository accountRepository,
+									  TransactionRepository transactionRepository,
+									  LoanRepository loanRepository,
+									  ClienLoanRepository clienLoanRepository,
+									  CardRepository cardRepository){
 		return (args) -> {
 
 			LocalDateTime dateNow = LocalDateTime.now();
@@ -143,6 +148,27 @@ public class HomebankingApplication {
 			automotive.addClientLoan(clientLoan4);
 			clienLoanRepository.save(clientLoan4);
 
+			//-------------------------------------------Crear Cards de Melba----------------------------------------------
+			Card card1Melva = new Card(melba, CardType.DEBIT, CardColor.GOLD, "3325-6745-7876-4445", 990, dateNow,dateNow.plusYears(5));
+			Card card2Melva = new Card(melba, CardType.CREDIT, CardColor.TITANIUM, "2234-6745-5528-7888", 750, dateNow, dateNow.plusYears(5));
+
+			melba.addCard(card1Melva);
+			melba.addCard(card2Melva);
+
+			card1Melva.setClient(melba);
+			card2Melva.setClient(melba);
+
+			cardRepository.save(card1Melva);
+			cardRepository.save(card2Melva);
+
+			//-------------------------------------------Crear Cards de Melba----------------------------------------------
+			Card card1Luis = new Card(luis, CardType.CREDIT, CardColor.SILVER, "3214-6549-7894-7412", 789, dateNow, dateNow.plusYears(5));
+
+			luis.addCard(card1Luis);
+
+			card1Luis.setClient(luis);
+
+			cardRepository.save(card1Luis);
 
 		};
 	}

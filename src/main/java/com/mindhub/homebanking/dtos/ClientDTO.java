@@ -16,6 +16,8 @@ public class ClientDTO {
 
     private List<ClientLoanDTO> loans = new ArrayList<>();
 
+    private List<CardDTO> cards = new ArrayList<>();
+
     // El constructor de ClientDTO recibe por parametro un objeto ya creado de tipo Client para poder acceder a los valores de las propiedades de client
     // a traves de sus metodos accesores getters
     public ClientDTO(Client client) {
@@ -29,6 +31,8 @@ public class ClientDTO {
                 .collect(Collectors.toSet());
 
         this.loans = client.getClientLoans().stream().map(clientLoan -> new ClientLoanDTO(clientLoan)).collect(Collectors.toList());
+
+        this.cards = client.getCards().stream().map(card -> new CardDTO(card)).collect(Collectors.toList());
     }
 
     // Getters
@@ -59,6 +63,13 @@ public class ClientDTO {
     public void setLoans(List<ClientLoanDTO> loans) {
         this.loans = loans;
     }
+
+    //-------------------------------------Sprint 5----------------------------------------
+    public List<CardDTO> getCards() {
+        return cards;
+    }
+    //-------------------------------------Sprint 5----------------------------------------
+
 
     @Override
     public String toString() {

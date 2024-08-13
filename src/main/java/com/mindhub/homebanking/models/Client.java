@@ -1,8 +1,5 @@
 package com.mindhub.homebanking.models;
-
-
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +24,13 @@ public class Client {
 
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     private List<ClientLoan> clientLoans = new ArrayList<>();
+
+    //------------------------------------Sprint5---------------------------------------------
+    @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
+    private List<Card> cards = new ArrayList<>();
+    //------------------------------------Sprint5---------------------------------------------
+
+
     //--------------------------------------------------------------------------------------
 
 
@@ -91,6 +95,14 @@ public class Client {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    //------------------------------------Sprint5---------------------------------------------
+    public List<Card> getCards() { return cards;}
+
+    public void setCards(List<Card> cards) { this.cards = cards;}
+    //------------------------------------Sprint5---------------------------------------------
+
+
     //--------------------------------------------------------------------------------------
 
 
@@ -102,9 +114,16 @@ public class Client {
     }
 
     public void addClientLoan(ClientLoan clientLoan){
-        this.clientLoans.add(clientLoan);
-        clientLoan.setClient(this);
+        this.clientLoans.add(clientLoan); // Agrego el objeto de tipo ClientLoan que recibe por parametro a la lista de clientLoans
+        clientLoan.setClient(this); // Para establecer la relacion bidireccional necesito agregar este cliente a ClientLoan
     }
+
+    //------------------------------------Sprint5---------------------------------------------
+    public void addCard(Card card){
+        this.cards.add(card);
+        card.setClient(this);
+    }
+    //------------------------------------Sprint5---------------------------------------------
     //--------------------------------------------------------------------------------------
 
 
