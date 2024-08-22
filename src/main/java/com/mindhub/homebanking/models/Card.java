@@ -1,10 +1,13 @@
 package com.mindhub.homebanking.models;
 
+import com.mindhub.homebanking.models.utils.GenerateRandomNumber;
 import jakarta.persistence.*;
 import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Entity
 public class Card {
@@ -21,9 +24,9 @@ public class Card {
     private CardColor color;
 
     private String number;
-    private int cvv;
-    private LocalDateTime fromDate;
-    private LocalDateTime thruDate;
+    private int cvv = new Random().nextInt((999 - 100) + 1) + 100;
+    private LocalDate fromDate;
+    private LocalDate thruDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
@@ -32,13 +35,9 @@ public class Card {
 
     public Card(){ }
 
-    public Card(Client client, CardType type, CardColor color, String number, int cvv, LocalDateTime fromDate, LocalDateTime thruDate) {
-        this.client = client;
-        this.cardHolader = client.getFirstName() + " " + client.getLastName();
+    public Card(CardType type, CardColor color, LocalDate fromDate, LocalDate thruDate) {
         this.type = type;
         this.color = color;
-        this.number = number;
-        this.cvv = cvv;
         this.fromDate = fromDate;
         this.thruDate = thruDate;
     }
@@ -84,19 +83,19 @@ public class Card {
         this.cvv = cvv;
     }
 
-    public LocalDateTime getFromDate() {
+    public LocalDate getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(LocalDateTime fromDate) {
+    public void setFromDate(LocalDate fromDate) {
         this.fromDate = fromDate;
     }
 
-    public LocalDateTime getThruDate() {
+    public LocalDate getThruDate() {
         return thruDate;
     }
 
-    public void setThruDate(LocalDateTime thruDate) {
+    public void setThruDate(LocalDate thruDate) {
         this.thruDate = thruDate;
     }
 
@@ -106,6 +105,8 @@ public class Card {
 
     public void setClient(Client client) {
         this.client = client;
+        this.cardHolader = client.getFirstName() + " " + client.getLastName();
+        this.number = GenerateRandomNumber.generateNumberCard();
     }
 
     public Long getId() {

@@ -12,6 +12,8 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Esto hará que el valor de la "id" sea generado automaticamente
                                                        // por la base de datos en una secuencia de 1 en 1
     private Long id;
+
+    
     private String firstName;
     private String lastName;
     private String email;

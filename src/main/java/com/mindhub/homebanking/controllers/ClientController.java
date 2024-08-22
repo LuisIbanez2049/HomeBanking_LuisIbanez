@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController // Indicamos que la clase actua como un controlador REST, es decir que va a manejar solicitudes HTTP siguiendo el protocolo REST
+@CrossOrigin(origins = "http://localhost:5173") // Reemplaza con la URL de tu aplicación React ===>===>===>===>===>===>===>===>===>===>===>===>===>===>
 @RequestMapping("/api/clients") // Defino la ruta base de acceso a la que este controlador va a escuchar
                                 // Le pongo "api" para seguir la conveción
 public class ClientController {

@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
@@ -28,6 +29,7 @@ public class HomebankingApplication {
 		return (args) -> {
 
 			LocalDateTime dateNow = LocalDateTime.now();
+			LocalDate date = LocalDate.now();
 
 
 			Client melba = new Client("Melba", "Morel", "melba@mindhub.com");
@@ -149,8 +151,8 @@ public class HomebankingApplication {
 			clienLoanRepository.save(clientLoan4);
 
 			//-------------------------------------------Crear Cards de Melba----------------------------------------------
-			Card card1Melva = new Card(melba, CardType.DEBIT, CardColor.GOLD, "3325-6745-7876-4445", 990, dateNow,dateNow.plusYears(5));
-			Card card2Melva = new Card(melba, CardType.CREDIT, CardColor.TITANIUM, "2234-6745-5528-7888", 750, dateNow, dateNow.plusYears(5));
+			Card card1Melva = new Card(CardType.DEBIT, CardColor.GOLD, date,date.plusYears(5));
+			Card card2Melva = new Card(CardType.CREDIT, CardColor.TITANIUM, date, date.plusYears(5));
 
 			melba.addCard(card1Melva);
 			melba.addCard(card2Melva);
@@ -162,7 +164,7 @@ public class HomebankingApplication {
 			cardRepository.save(card2Melva);
 
 			//-------------------------------------------Crear Cards de Melba----------------------------------------------
-			Card card1Luis = new Card(luis, CardType.CREDIT, CardColor.SILVER, "3214-6549-7894-7412", 789, dateNow, dateNow.plusYears(5));
+			Card card1Luis = new Card(CardType.CREDIT, CardColor.SILVER, date, date.plusYears(5));
 
 			luis.addCard(card1Luis);
 
