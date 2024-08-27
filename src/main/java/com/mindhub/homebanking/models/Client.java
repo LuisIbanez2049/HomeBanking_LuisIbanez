@@ -18,6 +18,7 @@ public class Client {
     private String lastName;
     private String email;
     private boolean active = true;
+    private String password;
 
     //--------------------------------------------------------------------------------------
     // Trayendo a la persona JPA automaticamente deberia traerme la o las cuentas asociadas
@@ -103,6 +104,14 @@ public class Client {
 
     public void setCards(List<Card> cards) { this.cards = cards;}
     //------------------------------------Sprint5---------------------------------------------
+
+    //------------------------------------Spring7-----------------------------------------
+
+    public String getPassword() {return password;}
+
+    public void setPassword(String password) {this.password = password;}
+
+    //--------------------------------------------------------------------------------------
 
 
     //--------------------------------------------------------------------------------------
