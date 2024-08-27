@@ -43,10 +43,11 @@ public class Client {
     public Client() { }
 
     // Constructor parametrizado
-    public Client(String first, String last, String emailClient) {
-        firstName = first;
-        lastName = last;
-        email = emailClient;
+    public Client(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
     }
     //--------------------------------------------------------------------------------------
 
@@ -105,12 +106,11 @@ public class Client {
     public void setCards(List<Card> cards) { this.cards = cards;}
     //------------------------------------Sprint5---------------------------------------------
 
-    //------------------------------------Spring7-----------------------------------------
 
+    //------------------------------------Spring7-----------------------------------------
     public String getPassword() {return password;}
 
     public void setPassword(String password) {this.password = password;}
-
     //--------------------------------------------------------------------------------------
 
 

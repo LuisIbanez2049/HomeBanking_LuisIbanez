@@ -5,6 +5,7 @@ import com.mindhub.homebanking.dtos.AccountDTO;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -166,6 +167,11 @@ public class ClientController {
         return new ResponseEntity<>(clientDTO, HttpStatus.OK);
     }
     //---------------------------------------------------------------------------------------------------------------------------
+
+//    @GetMapping("/test")
+//    public ResponseEntity<?> test (Authentication authentication){
+//        String mail = authentication.getname
+//    }
 
 }
 

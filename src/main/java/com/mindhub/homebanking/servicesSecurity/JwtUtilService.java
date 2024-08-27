@@ -71,7 +71,7 @@ public class JwtUtilService {
     // "extractExpiration(token)" extrae la fecha de expiracion del token que le pasamos por argumento
     // ".before(new Date())" verifica si la fecha de expiracion extraida
     // true: el token esta expirado,   false: el token esta vigente
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
