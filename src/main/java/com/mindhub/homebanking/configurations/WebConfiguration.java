@@ -52,10 +52,11 @@ public class WebConfiguration {
                 // Configura las reglas de autorización para las solicitudes HTTP.
                 .authorizeHttpRequests(authorize ->
                         authorize
+                                .requestMatchers("/api/clients/","/api/clients/**","/api/accounts/", "/api/accounts/**").hasRole("ADMIN")
                                 // Permite el acceso sin autenticación a las rutas especificadas (login, registro, y consola H2).
                                 .requestMatchers("/api/auth/login", "/api/auth/register", "/h2-console/**").permitAll()
                                 // Permite el acceso sin autenticación a cualquier otra solicitud (esto puede ser modificado según los requisitos).
-                                .anyRequest().permitAll()
+                                .anyRequest().authenticated()
                 )
 
                 // Agrega el filtro JWT antes del filtro de autenticación por nombre de usuario y contraseña.

@@ -40,6 +40,14 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
 
+        if (client.getEmail().contains("@admin")){
+            return User
+                    .withUsername(username) // Va a tener el email
+                    .password(client.getPassword()) // Obtengo la contraseña del cliente
+                    .roles("ADMIN") // Le doy el rol de client
+                    .build(); // Mando a contruir a este usuario
+        }
+
 
         // Si se encuentra al usuario retornamos al usuario que vamos a guardar en el context holder
         return User
