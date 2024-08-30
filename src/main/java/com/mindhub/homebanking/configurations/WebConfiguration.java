@@ -25,13 +25,6 @@ public class WebConfiguration {
     @Autowired
     private CorsConfigurationSource corsConfigurationSource; // Fuente de configuración para CORS (Cross-Origin Resource Sharing).
 
-    /**
-     * Configura la cadena de filtros de seguridad para la aplicación.
-     *
-     * @param httpSecurity Configuración de seguridad HTTP.
-     * @return La configuración de seguridad construida.
-     * @throws Exception Si ocurre algún error durante la configuración.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
@@ -53,6 +46,7 @@ public class WebConfiguration {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/api/clients/","/api/clients/**","/api/accounts/", "/api/accounts/**").hasRole("ADMIN")
+                                .requestMatchers("/api/auth/current").hasRole("CLIENT")
                                 // Permite el acceso sin autenticación a las rutas especificadas (login, registro, y consola H2).
                                 .requestMatchers("/api/auth/login", "/api/auth/register", "/h2-console/**").permitAll()
                                 // Permite el acceso sin autenticación a cualquier otra solicitud (esto puede ser modificado según los requisitos).
@@ -68,23 +62,11 @@ public class WebConfiguration {
         return httpSecurity.build();
     }
 
-    /**
-     * Configura un codificador de contraseñas utilizando BCrypt para el almacenamiento seguro de contraseñas.
-     *
-     * @return Un codificador de contraseñas BCrypt.
-     */
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Configura un AuthenticationManager utilizando la configuración de autenticación proporcionada.
-     *
-     * @param authenticationConfiguration Configuración de autenticación.
-     * @return El AuthenticationManager configurado.
-     * @throws Exception Si ocurre algún error durante la configuración.
-     */
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

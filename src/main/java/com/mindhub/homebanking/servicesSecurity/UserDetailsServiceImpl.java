@@ -10,29 +10,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
- // Ademas de decir que es un servicio, "@Service"  nos va a permitir inyectar esta clase en la clase "JwtRequesFilter" ubicado
- // En el paquete "filters"
+
 @Service
 public class UserDetailsServiceImpl  implements UserDetailsService {
-    // Implementamos la logica de la interfaz "UserDetailsService" el cual nos provee el framework spring securuty
-    // Este tiene el metodo "loadUserByUsername"
 
     //Inyectamos clientRepository
     @Autowired
     private ClientRepository clientRepository;
 
-
-    // Declaramos el metodo "loadUserByUsername" que es el metodo que nos proporciona "UserDetailsService" y la sobre escribimos
-    // Para que tenga el comportamiento que nosotros deseamos
-    // Por eso tiene la anotacion "@Override"
-    // El metodo "loadUserByUsername" nos devuelve un "UserDetails" que va a ser el usuario que queremos tener en el context holder
-    // Este metodo no arroja "throws"
-    // Una exepcion "UsernameNotFoundException"
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        // Con el repositorio de client vamos a buscar al cliente, que esta en la base de datos, por su email
-        // Al metodo "findByEmail" le paso un email y me devulve un client 
         Client client = clientRepository.findByEmail(username);
 
         // Si el cliente es nulo, no se encuentra arrojamos la exepcion "UsernameNotFoundException(username)"

@@ -82,8 +82,12 @@ public class AuthController {
         }
 
         // Verifica si el nombre y apellido no están vacíos.
-        if (registerDTO.firstName().isBlank() || registerDTO.lastName().isBlank()) {
-            return new ResponseEntity<>("First name and last name cannot be empty", HttpStatus.BAD_REQUEST);
+        if (registerDTO.firstName().isBlank()) {
+            return new ResponseEntity<>("First name cannot be empty", HttpStatus.BAD_REQUEST);
+        }
+        // Verifica si el nombre y apellido no están vacíos.
+        if (registerDTO.lastName().isBlank()) {
+            return new ResponseEntity<>("Last name cannot be empty", HttpStatus.BAD_REQUEST);
         }
 
         // Verifica si la contraseña cumple con el requisito mínimo de longitud.
@@ -97,17 +101,6 @@ public class AuthController {
         // Crea un nuevo cliente con la información proporcionada.
         Client newClient = new Client(registerDTO.firstName(), registerDTO.lastName(), registerDTO.email(), encodedPassword);
 
-        // Guarda el cliente y convierte a DTO.
-        ClientDTO clientDTO = new ClientDTO(clientRepository.save(newClient));
-
-        // Crea una nueva cuenta para el cliente.
-        Account account = new Account("VIN-" + String.valueOf(this.num), LocalDateTime.now(), 0);
-        this.num += 1;
-
-        // Asocia la cuenta al cliente.
-        newClient.addAccount(account);
-        // Guarda la cuenta y convierte a DTO.
-        AccountDTO accountDTO = new AccountDTO(accountRepository.save(account));
 
         // Guarda el nuevo cliente en la base de datos.
         clientRepository.save(newClient);
