@@ -34,9 +34,6 @@ public class AuthController {
     private ClientRepository clientRepository; // Repositorio para manejar operaciones CRUD de clientes.
 
     @Autowired
-    private AccountRepository accountRepository; // Repositorio para manejar operaciones CRUD de cuentas.
-
-    @Autowired
     private AuthenticationManager authenticationManager; // Administrador de autenticación para manejar el proceso de autenticación.
 
     @Autowired
@@ -44,8 +41,6 @@ public class AuthController {
 
     @Autowired
     private JwtUtilService jwtUtilService; // Servicio para manejar la generación y validación de JWT (JSON Web Tokens).
-
-    static private int num = 007; // Contador para generar identificadores únicos para las cuentas.
 
     // Endpoint para iniciar sesión y generar un token JWT.
     @PostMapping("/login")
