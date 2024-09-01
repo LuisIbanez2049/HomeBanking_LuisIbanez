@@ -24,20 +24,22 @@ public class Card {
     private CardColor color;
 
     private String number;
-    private int cvv = new Random().nextInt((999 - 100) + 1) + 100;
+    private int cvv;
     private LocalDate fromDate;
     private LocalDate thruDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
     private Client client;
-
+// type, color, fromDate, thruDate, number, cvv
 
     public Card(){ }
 
-    public Card(CardType type, CardColor color, LocalDate fromDate, LocalDate thruDate) {
+    public Card(CardType type, CardColor color, String number, int cvv, LocalDate fromDate, LocalDate thruDate) {
         this.type = type;
         this.color = color;
+        this.number = number;
+        this.cvv = cvv;
         this.fromDate = fromDate;
         this.thruDate = thruDate;
     }
@@ -106,7 +108,6 @@ public class Card {
     public void setClient(Client client) {
         this.client = client;
         this.cardHolader = client.getFirstName() + " " + client.getLastName();
-        this.number = GenerateRandomNumber.generateNumberCard();
     }
 
     public Long getId() {

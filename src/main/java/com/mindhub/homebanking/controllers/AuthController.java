@@ -6,6 +6,7 @@ import com.mindhub.homebanking.dtos.LoginDTO;
 import com.mindhub.homebanking.dtos.RegisterDTO;
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
+import com.mindhub.homebanking.models.utils.GenerateAccountNumber;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.servicesSecurity.JwtUtilService;
@@ -20,7 +21,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RestController
@@ -32,6 +32,9 @@ public class AuthController {
 
     @Autowired
     private ClientRepository clientRepository; // Repositorio para manejar operaciones CRUD de clientes.
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager; // Administrador de autenticación para manejar el proceso de autenticación.
@@ -95,10 +98,16 @@ public class AuthController {
 
         // Crea un nuevo cliente con la información proporcionada.
         Client newClient = new Client(registerDTO.firstName(), registerDTO.lastName(), registerDTO.email(), encodedPassword);
-
-
         // Guarda el nuevo cliente en la base de datos.
         clientRepository.save(newClient);
+
+        //---------------------------------------------------CREAR Y ASOCIAR CUENTA AL CLIENTE NUEVO---------------------------------------------
+        LocalDateTime date = LocalDateTime.now();
+        Account newAccount = new Account(GenerateAccountNumber.generateSerialNumber(), date, 0 );
+        newAccount.setClient(newClient);
+        newClient.addAccount(newAccount);
+        accountRepository.save(newAccount);
+        //--------------------------------------------------------------------------------------------------------------------------------
 
         // Retorna una respuesta exitosa con un mensaje de confirmación.
         return new ResponseEntity<>("Client registered successfully", HttpStatus.CREATED);

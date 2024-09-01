@@ -156,8 +156,8 @@ public class HomebankingApplication {
 			clienLoanRepository.save(clientLoan4);
 
 			//-------------------------------------------Crear Cards de Melba----------------------------------------------
-			Card card1Melva = new Card(CardType.DEBIT, CardColor.GOLD, date,date.plusYears(5));
-			Card card2Melva = new Card(CardType.CREDIT, CardColor.TITANIUM, date, date.plusYears(5));
+			Card card1Melva = new Card(CardType.DEBIT, CardColor.GOLD, "3435-6736-2470-2857", 456, date,date.plusYears(5));
+			Card card2Melva = new Card(CardType.CREDIT, CardColor.TITANIUM,"3435-6736-6827-2240", 896, date, date.plusYears(5));
 
 			melba.addCard(card1Melva);
 			melba.addCard(card2Melva);
@@ -169,7 +169,7 @@ public class HomebankingApplication {
 			cardRepository.save(card2Melva);
 
 			//-------------------------------------------Crear Cards de Melba----------------------------------------------
-			Card card1Luis = new Card(CardType.CREDIT, CardColor.SILVER, date, date.plusYears(5));
+			Card card1Luis = new Card(CardType.CREDIT, CardColor.SILVER, "3435-6736-2470-2240",894, date, date.plusYears(5));
 
 			luis.addCard(card1Luis);
 
