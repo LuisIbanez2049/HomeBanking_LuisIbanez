@@ -43,6 +43,19 @@ public class CardController {
         if (newCardDTO.color().isBlank()) {
             return new ResponseEntity<>("Card color must be specified", HttpStatus.BAD_REQUEST);
         }
+        //-------------------------------------------------------------------------------------
+        if (newCardDTO.type().toLowerCase().equals("debit")) {
+            if (client.getCards().stream().filter(card -> card.getType().equals(CardType.DEBIT)).count() == 3) {
+                return new ResponseEntity<>("You cannot have more than 3 DEBIT CARDS", HttpStatus.FORBIDDEN);
+            }
+
+        }
+        if (newCardDTO.type().toLowerCase().equals("credit")) {
+            if (client.getCards().stream().filter(card -> card.getType().equals(CardType.CREDIT)).count() == 3) {
+                return new ResponseEntity<>("You cannot have more than 3 CREDIT CARDS", HttpStatus.FORBIDDEN);
+            }
+
+        }
 
         if (newCardDTO.type().toLowerCase().equals("debit") && newCardDTO.color().equalsIgnoreCase("gold")) {
             if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.DEBIT) &&
@@ -78,8 +91,6 @@ public class CardController {
             }
         }
 
-
-
         String cardNumber;
         boolean isUnique = false;
 
@@ -110,7 +121,7 @@ public class CardController {
                     return new ResponseEntity<>("Created card", HttpStatus.CREATED);
                 }
                 else if (newCardDTO.color().toLowerCase().equals("titanium")){
-                    Card newCard = new Card(CardType.CREDIT, CardColor.SILVER, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
+                    Card newCard = new Card(CardType.CREDIT, CardColor.TITANIUM, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
                     client.addCard(newCard);
                     newCard.setClient(client);
                     cardRepository.save(newCard);
@@ -136,7 +147,7 @@ public class CardController {
                     return new ResponseEntity<>("Created card", HttpStatus.CREATED);
                 }
                 else if (newCardDTO.color().toLowerCase().equals("titanium")){
-                    Card newCard = new Card(CardType.DEBIT, CardColor.SILVER, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
+                    Card newCard = new Card(CardType.DEBIT, CardColor.TITANIUM, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
                     client.addCard(newCard);
                     newCard.setClient(client);
                     cardRepository.save(newCard);
@@ -144,7 +155,6 @@ public class CardController {
                 }
 
             }else { return new ResponseEntity<>("You cannot have more than 3 DEBIT CARDS", HttpStatus.FORBIDDEN); }
-
         }
         return new ResponseEntity<>("ALGO SALIO MAL", HttpStatus.FORBIDDEN);
     }
