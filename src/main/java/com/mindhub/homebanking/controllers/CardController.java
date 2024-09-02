@@ -1,5 +1,8 @@
 package com.mindhub.homebanking.controllers;
 
+import com.mindhub.homebanking.dtos.AccountDTO;
+import com.mindhub.homebanking.dtos.CardDTO;
+import com.mindhub.homebanking.dtos.ClientDTO;
 import com.mindhub.homebanking.dtos.NewCardDTO;
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.models.utils.GenerateAccountNumber;
@@ -12,13 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/cards")
@@ -29,6 +31,15 @@ public class CardController {
 
     @Autowired
     private CardRepository cardRepository;
+
+    @GetMapping("/clients/current/cards")
+    public List<CardDTO> getClient(Authentication authentication) {
+        // Obtiene el cliente basado en el nombre de usuario autenticado.
+        Client client = clientRepository.findByEmail(authentication.getName());
+
+        // Retorna los detalles del cliente en la respuesta.
+        return client.getCards().stream().map(card -> new CardDTO(card)).collect(Collectors.toList());
+    }
 
     @PostMapping("/clients/current/cards")
     public ResponseEntity<?> createCardForCurrentClient (Authentication authentication,@RequestBody NewCardDTO newCardDTO){
