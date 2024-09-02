@@ -47,6 +47,9 @@ public class TransactionController {
         if (destinyAccount == null) {
             return new ResponseEntity<>("Destiny account does not exist", HttpStatus.FORBIDDEN);
         }
+        if (client.getAccounts().stream().noneMatch(account -> account.getNumber().equals(newTransactionDTO.sourceAccount()))) {
+            return new ResponseEntity<>("You do not have an account with number: "+newTransactionDTO.sourceAccount(), HttpStatus.FORBIDDEN);
+        }
         if (newTransactionDTO.sourceAccount().equals(newTransactionDTO.destinyAccount())) {
             return new ResponseEntity<>("You can not make a transaction from an account to the same account", HttpStatus.BAD_REQUEST);
         }
