@@ -77,7 +77,7 @@ public class AccountController {
 
         } while (!isUnique);
 
-        if (client.getAccounts().stream().toArray().length < 3) {
+        if (client.getAccounts().toArray().length < 3) {
             LocalDateTime date = LocalDateTime.now();
             Account newAccount = new Account(accountNumber, date, 0 );
             newAccount.setClient(client);

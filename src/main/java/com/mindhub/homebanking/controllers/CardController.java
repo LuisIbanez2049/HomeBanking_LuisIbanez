@@ -54,6 +54,14 @@ public class CardController {
         if (newCardDTO.color().isBlank()) {
             return new ResponseEntity<>("Card color must be specified", HttpStatus.BAD_REQUEST);
         }
+        String type1 = "debit";
+        String type2 = "debit";
+        if (!newCardDTO.type().toLowerCase().equals("debit") && !newCardDTO.type().toLowerCase().equals("credit")) {
+            return new ResponseEntity<>("No exist the type of card: "+"["+newCardDTO.type()+"]"+" or it must not contains an space character", HttpStatus.BAD_REQUEST);
+        }
+        if (!newCardDTO.color().toLowerCase().equals("gold") && !newCardDTO.color().toLowerCase().equals("silver") && !newCardDTO.color().toLowerCase().equals("titanium")) {
+            return new ResponseEntity<>("No exist the type of color: "+"["+newCardDTO.color()+"]" +" or it must not contains an space character", HttpStatus.BAD_REQUEST);
+        }
         //-------------------------------------------------------------------------------------
         if (newCardDTO.type().toLowerCase().equals("debit")) {
             if (client.getCards().stream().filter(card -> card.getType().equals(CardType.DEBIT)).count() == 3) {

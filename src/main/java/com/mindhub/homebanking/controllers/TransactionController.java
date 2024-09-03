@@ -76,13 +76,13 @@ public class TransactionController {
 
         if (sourceAccount != null && destinyAccount != null) {
             // Transaction transaction1MelbaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
-            Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(), newTransactionDTO.description(), dateNow);
+            Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(),"Account debited for: ["+newTransactionDTO.description()+"]. Funds were transferred to the account: ["+newTransactionDTO.destinyAccount()+"]", dateNow);
             sourceAccount.addTransaction(newTransaction);
             transactionRepository.save(newTransaction);
             double upDateBalanceSourceAccount = sourceAccount.getBalance() - newTransactionDTO.amount();
             sourceAccount.setBalance(upDateBalanceSourceAccount);
 
-            Transaction destinyTransaction = new Transaction(TransactionType.CREDIT, newTransactionDTO.amount(), newTransactionDTO.description(), dateNow);
+            Transaction destinyTransaction = new Transaction(TransactionType.CREDIT, newTransactionDTO.amount(), "Account credited for: ["+newTransactionDTO.description()+"]. Funds were transferred from the account: ["+newTransactionDTO.sourceAccount()+"]", dateNow);
             destinyAccount.addTransaction(destinyTransaction);
             transactionRepository.save(destinyTransaction);
             double upDateBalanceDestinyAccount = destinyAccount.getBalance() + newTransactionDTO.amount();
