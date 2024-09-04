@@ -103,7 +103,22 @@ public class AuthController {
 
         //---------------------------------------------------CREAR Y ASOCIAR CUENTA AL CLIENTE NUEVO---------------------------------------------
         LocalDateTime date = LocalDateTime.now();
-        Account newAccount = new Account(GenerateAccountNumber.generateSerialNumber(), date, 0 );
+        //------------------------------------------------------------------------------------------------------------------
+        String accountNumber;
+        boolean isUnique = false;
+
+        do {
+            accountNumber = GenerateAccountNumber.generateSerialNumber();
+            Account account = accountRepository.findByNumber(accountNumber);
+
+            // Si la cuenta no existe en la base de datos, es única
+            if (account == null) {
+                isUnique = true;
+            }
+
+        } while (!isUnique);
+        //-------------------------------------------------------------------------------------------------------------------
+        Account newAccount = new Account(accountNumber, date, 0 );
         newAccount.setClient(newClient);
         newClient.addAccount(newAccount);
         accountRepository.save(newAccount);

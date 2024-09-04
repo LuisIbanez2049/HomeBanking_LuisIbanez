@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.plaf.synth.ColorType;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -43,71 +44,51 @@ public class CardController {
 
     @PostMapping("/clients/current/cards")
     public ResponseEntity<?> createCardForCurrentClient (Authentication authentication,@RequestBody NewCardDTO newCardDTO){
+        try {
+
         Client client = clientRepository.findByEmail(authentication.getName());
         LocalDate date = LocalDate.now();
 
-        // Verifica si el nombre y apellido no están vacíos.
         if (newCardDTO.type().isBlank()) {
             return new ResponseEntity<>("Card type must be specified", HttpStatus.BAD_REQUEST);
         }
-        // Verifica si el nombre y apellido no están vacíos.
         if (newCardDTO.color().isBlank()) {
             return new ResponseEntity<>("Card color must be specified", HttpStatus.BAD_REQUEST);
         }
-        String type1 = "debit";
-        String type2 = "debit";
-        if (!newCardDTO.type().toLowerCase().equals("debit") && !newCardDTO.type().toLowerCase().equals("credit")) {
-            return new ResponseEntity<>("No exist the type of card: "+"["+newCardDTO.type()+"]"+" or it must not contains an space character", HttpStatus.BAD_REQUEST);
+        // "equalsIgnoreCase" ignora si las letras estan en mayuscula o minuscula. Evito utilizar "toLowerCase()" o "toUpperCase()"
+        if (!newCardDTO.type().equalsIgnoreCase("debit") && !newCardDTO.type().equalsIgnoreCase("credit")) {
+            return new ResponseEntity<>("No exist the type of card: "+"["+newCardDTO.type()+"]" + " or it must not have an space character", HttpStatus.BAD_REQUEST);
         }
-        if (!newCardDTO.color().toLowerCase().equals("gold") && !newCardDTO.color().toLowerCase().equals("silver") && !newCardDTO.color().toLowerCase().equals("titanium")) {
-            return new ResponseEntity<>("No exist the type of color: "+"["+newCardDTO.color()+"]" +" or it must not contains an space character", HttpStatus.BAD_REQUEST);
+        if (!newCardDTO.color().equalsIgnoreCase("gold") && !newCardDTO.color().equalsIgnoreCase("silver") && !newCardDTO.color().equalsIgnoreCase("titanium")) {
+            return new ResponseEntity<>("No exist the type of color: "+"["+newCardDTO.color()+"]" + " or it must not have an space character", HttpStatus.BAD_REQUEST);
         }
         //-------------------------------------------------------------------------------------
-        if (newCardDTO.type().toLowerCase().equals("debit")) {
+        if (newCardDTO.type().toLowerCase().contains("debit")) {
             if (client.getCards().stream().filter(card -> card.getType().equals(CardType.DEBIT)).count() == 3) {
                 return new ResponseEntity<>("You cannot have more than 3 DEBIT CARDS", HttpStatus.FORBIDDEN);
             }
 
         }
-        if (newCardDTO.type().toLowerCase().equals("credit")) {
+        if (newCardDTO.type().toLowerCase().contains("credit")) {
             if (client.getCards().stream().filter(card -> card.getType().equals(CardType.CREDIT)).count() == 3) {
                 return new ResponseEntity<>("You cannot have more than 3 CREDIT CARDS", HttpStatus.FORBIDDEN);
             }
-
         }
 
-        if (newCardDTO.type().toLowerCase().equals("debit") && newCardDTO.color().equalsIgnoreCase("gold")) {
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.DEBIT) &&
-                    card.getColor().equals(CardColor.GOLD) )) {
-                return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
-        } else if (newCardDTO.type().toLowerCase().equals("debit") && newCardDTO.color().equalsIgnoreCase("silver")) {
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.DEBIT) &&
-                    card.getColor().equals(CardColor.SILVER) )) {
-                return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
-        }else if (newCardDTO.type().toLowerCase().equals("debit") && newCardDTO.color().equalsIgnoreCase("titanium")) {
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.DEBIT) &&
-                    card.getColor().equals(CardColor.TITANIUM) )) {
-                return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
-        }
+        CardType cardType;
+        if (newCardDTO.type().equalsIgnoreCase("debit")) {
+            cardType = CardType.DEBIT;
+        } else cardType = CardType.CREDIT;
 
-        if (newCardDTO.type().toLowerCase().equals("credit") && newCardDTO.color().equalsIgnoreCase("gold")) {
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.CREDIT) &&
-                    card.getColor().equals(CardColor.GOLD) )) {
-                return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
-        } else if (newCardDTO.type().toLowerCase().equals("credit") && newCardDTO.color().equalsIgnoreCase("silver")) {
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.CREDIT) &&
-                    card.getColor().equals(CardColor.SILVER) )) {
-                return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
-        }else if (newCardDTO.type().toLowerCase().equals("credit") && newCardDTO.color().equalsIgnoreCase("titanium")) {
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(CardType.CREDIT) &&
-                    card.getColor().equals(CardColor.TITANIUM) )) {
-                return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
+        CardColor cardColor;
+        if (newCardDTO.color().equalsIgnoreCase("gold")) {
+            cardColor = CardColor.GOLD;
+        } else if (newCardDTO.color().equalsIgnoreCase("silver")) {
+            cardColor = CardColor.SILVER;
+        } else cardColor = CardColor.TITANIUM;
+
+        if (client.getCards().stream().anyMatch(card -> card.getType().equals(cardType) && card.getColor().equals(cardColor) )) {
+            return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
         }
 
         String cardNumber;
@@ -124,57 +105,13 @@ public class CardController {
 
         } while (!isUnique);
 
-        if (newCardDTO.type().toLowerCase().equals("credit")) {
-            if (client.getCards().stream().filter(card -> card.getType().equals(CardType.CREDIT)).toArray().length < 3) {
-                if (newCardDTO.color().toLowerCase().equals("gold")) {
-                    Card newCard = new Card(CardType.CREDIT, CardColor.GOLD, cardNumber, GenerateCvvNumber.generateNumer(),date,date.plusYears(5) );
-                    client.addCard(newCard);
-                    newCard.setClient(client);
-                    cardRepository.save(newCard);
-                    return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-                } else if (newCardDTO.color().toLowerCase().equals("silver")) {
-                    Card newCard = new Card(CardType.CREDIT, CardColor.SILVER, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
-                    client.addCard(newCard);
-                    newCard.setClient(client);
-                    cardRepository.save(newCard);
-                    return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-                }
-                else if (newCardDTO.color().toLowerCase().equals("titanium")){
-                    Card newCard = new Card(CardType.CREDIT, CardColor.TITANIUM, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
-                    client.addCard(newCard);
-                    newCard.setClient(client);
-                    cardRepository.save(newCard);
-                    return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-                }
-            }else { return new ResponseEntity<>("You cannot have more than 3 CREDIT CARDS", HttpStatus.FORBIDDEN); }
+            Card newCard = new Card(cardType, cardColor, cardNumber, GenerateCvvNumber.generateNumer(),date,date.plusYears(5) );
+            client.addCard(newCard);
+            newCard.setClient(client);
+            cardRepository.save(newCard);
+            return new ResponseEntity<>("Created card", HttpStatus.CREATED);
+        } catch (Exception e){
+            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        if (newCardDTO.type().toLowerCase().equals("debit")) {
-
-            if (client.getCards().stream().filter(card -> card.getType().equals(CardType.DEBIT)).count() < 3) {
-                if (newCardDTO.color().toLowerCase().equals("gold")) {
-                    Card newCard = new Card(CardType.DEBIT, CardColor.GOLD, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
-                    client.addCard(newCard);
-                    newCard.setClient(client);
-                    cardRepository.save(newCard);
-                    return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-                } else if (newCardDTO.color().toLowerCase().equals("silver")) {
-                    Card newCard = new Card(CardType.DEBIT, CardColor.SILVER, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
-                    client.addCard(newCard);
-                    newCard.setClient(client);
-                    cardRepository.save(newCard);
-                    return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-                }
-                else if (newCardDTO.color().toLowerCase().equals("titanium")){
-                    Card newCard = new Card(CardType.DEBIT, CardColor.TITANIUM, cardNumber, GenerateCvvNumber.generateNumer(), date,date.plusYears(5) );
-                    client.addCard(newCard);
-                    newCard.setClient(client);
-                    cardRepository.save(newCard);
-                    return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-                }
-
-            }else { return new ResponseEntity<>("You cannot have more than 3 DEBIT CARDS", HttpStatus.FORBIDDEN); }
-        }
-        return new ResponseEntity<>("ALGO SALIO MAL", HttpStatus.FORBIDDEN);
     }
 }

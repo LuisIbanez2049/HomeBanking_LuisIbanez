@@ -74,7 +74,6 @@ public class TransactionController {
             return new ResponseEntity<>("You don't have enough funds to carry out this transaction. Your balance is: "+sourceAccount.getBalance(), HttpStatus.BAD_REQUEST);
         }
 
-        if (sourceAccount != null && destinyAccount != null) {
             // Transaction transaction1MelbaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
             Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(),"Account debited for: ["+newTransactionDTO.description()+"]. Funds were transferred to the account: ["+newTransactionDTO.destinyAccount()+"]", dateNow);
             sourceAccount.addTransaction(newTransaction);
@@ -89,9 +88,6 @@ public class TransactionController {
             destinyAccount.setBalance(upDateBalanceDestinyAccount);
 
             return new ResponseEntity<>("Successful transaction",HttpStatus.CREATED);
-        }
 
-
-        return new ResponseEntity<>("INTERNAL SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

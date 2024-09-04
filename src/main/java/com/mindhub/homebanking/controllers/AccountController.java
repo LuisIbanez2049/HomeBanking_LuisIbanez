@@ -20,10 +20,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 @RestController
-
-// Como el servidor de mi api y el servidor del front-end estan en diferentes origenes (Front: http://localhost:5173, Back: http://localhost:8080)
-// El navegador web por defecto bloqueará las solicitudes del front al back debido a las politicas de CORS
-@CrossOrigin(origins = "http://localhost:5173") // Reemplaza con la URL de tu aplicación React ===>===>===>===>===>===>===>===>===>===>===>===>===>===>
 @RequestMapping("/api/accounts")
 public class AccountController {
     @Autowired
