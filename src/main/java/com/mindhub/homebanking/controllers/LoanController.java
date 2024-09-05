@@ -92,10 +92,11 @@ public class LoanController {
             interestRate = 20;
         } else interestRate = 25;
         LocalDateTime dateNow = LocalDateTime.now();
-        Transaction transaction = new Transaction(TransactionType.CREDIT, loanApplicationDTO.amount(), "Account credited for: ["+loan.getName()+"] loan", dateNow);
+        double interest = (loanApplicationDTO.amount() * interestRate) / 100;
+        double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount() + interest;
+        Transaction transaction = new Transaction(TransactionType.CREDIT, upDateBalanceDestinyAccount, "Account credited for: ["+loan.getName()+"] loan || Amount: "+loanApplicationDTO.amount()+" || Interest rate "+interestRate+"%: "+interest, dateNow);
         destinyAccount.addTransaction(transaction);
         transactionRepository.save(transaction);
-        double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount() + ((loanApplicationDTO.amount() * interestRate) / 100);
         destinyAccount.setBalance(upDateBalanceDestinyAccount);
 
 
