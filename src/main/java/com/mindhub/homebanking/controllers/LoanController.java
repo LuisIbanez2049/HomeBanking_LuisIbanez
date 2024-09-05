@@ -1,6 +1,7 @@
 package com.mindhub.homebanking.controllers;
 
 import com.mindhub.homebanking.dtos.ClientDTO;
+import com.mindhub.homebanking.dtos.ClientLoanDTO;
 import com.mindhub.homebanking.dtos.LoanApplicationDTO;
 import com.mindhub.homebanking.dtos.LoanDTO;
 import com.mindhub.homebanking.models.*;
@@ -34,8 +35,16 @@ public class LoanController {
     TransactionRepository transactionRepository;
 
     @GetMapping("/")
-    public List<LoanDTO> getAllLoans(){
-        return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(toList());
+    public ResponseEntity<?> getAllLoans(Authentication authentication){
+        Client client = clientRepository.findByEmail(authentication.getName());
+        ClientDTO clientDTO = new ClientDTO(client);
+        List<LoanDTO> allLoans = loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(toList());
+        List<LoanDTO> availableLoans = allLoans.stream().filter(loan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(loan.getId()))).collect(Collectors.toList());
+        if (availableLoans.isEmpty()) {
+            return new ResponseEntity<>("You have already applied for all the loans available on the platform! Currently, there are no other options for you at this time", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(availableLoans,HttpStatus.OK);
+        //return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(toList());
     }
 
     @Transactional
@@ -45,6 +54,11 @@ public class LoanController {
         Client client = clientRepository.findByEmail(authentication.getName());
         Loan loan = loanRepository.findById(loanApplicationDTO.id()).orElse(null);
         ClientDTO clientDTO = new ClientDTO(client);
+        List<LoanDTO> allLoans = loanRepository.findAll().stream().map(eachLoan -> new LoanDTO(eachLoan)).collect(toList());
+        List<LoanDTO> availableLoans = allLoans.stream().filter(eachLoan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(eachLoan.getId()))).collect(Collectors.toList());
+        if (availableLoans.isEmpty()) {
+            return new ResponseEntity<>("You have already applied for all the loans available on the platform!", HttpStatus.NOT_FOUND);
+        }
 
         if (loan == null) {
             return new ResponseEntity<>("Loan not found with id " + loanApplicationDTO.id(), HttpStatus.NOT_FOUND);
