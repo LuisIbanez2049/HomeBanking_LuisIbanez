@@ -57,10 +57,10 @@ public class CardController {
         }
         // "equalsIgnoreCase" ignora si las letras estan en mayuscula o minuscula. Evito utilizar "toLowerCase()" o "toUpperCase()"
         if (!newCardDTO.type().equalsIgnoreCase("debit") && !newCardDTO.type().equalsIgnoreCase("credit")) {
-            return new ResponseEntity<>("No exist the type of card: "+"["+newCardDTO.type()+"]" + " or it must not have an space character", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No exist the type of card: "+"["+newCardDTO.type()+"]" + " or you typed an space character which is forbidden", HttpStatus.BAD_REQUEST);
         }
         if (!newCardDTO.color().equalsIgnoreCase("gold") && !newCardDTO.color().equalsIgnoreCase("silver") && !newCardDTO.color().equalsIgnoreCase("titanium")) {
-            return new ResponseEntity<>("No exist the type of color: "+"["+newCardDTO.color()+"]" + " or it must not have an space character", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("No exist the type of color: "+"["+newCardDTO.color()+"]" + " or you typed an space character which is forbidden", HttpStatus.BAD_REQUEST);
         }
         //-------------------------------------------------------------------------------------
         if (newCardDTO.type().toLowerCase().contains("debit")) {

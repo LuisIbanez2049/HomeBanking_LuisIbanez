@@ -38,7 +38,6 @@ public class TransactionController {
     public ResponseEntity<?> makeTransaction(Authentication authentication , @RequestBody NewTransactionDTO newTransactionDTO){
         Client client = clientRepository.findByEmail(authentication.getName());
         LocalDateTime dateNow = LocalDateTime.now();
-
         Account sourceAccount = accountRepository.findByNumber(newTransactionDTO.sourceAccount());
         if (sourceAccount == null) {
             return new ResponseEntity<>("Source account does not exist", HttpStatus.FORBIDDEN);
