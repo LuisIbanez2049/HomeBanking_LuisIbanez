@@ -6,6 +6,7 @@ import com.mindhub.homebanking.dtos.LoanApplicationDTO;
 import com.mindhub.homebanking.dtos.LoanDTO;
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
+import com.mindhub.homebanking.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,37 +25,36 @@ import static java.util.stream.Collectors.toList;
 public class LoanController {
 
     @Autowired
-    private LoanRepository loanRepository;
+    private LoanService loanService;
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
     @Autowired
-    private ClienLoanRepository clienLoanRepository;
+    private ClientLoanService clientLoanService;
     @Autowired
-    TransactionRepository transactionRepository;
+    private TransactionService transactionService;
 
     @GetMapping("/")
     public ResponseEntity<?> getAllLoans(Authentication authentication){
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.getClientByEmail(authentication.getName());
         ClientDTO clientDTO = new ClientDTO(client);
-        List<LoanDTO> allLoans = loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(toList());
+        List<LoanDTO> allLoans = loanService.getAllLoansDTO();
         List<LoanDTO> availableLoans = allLoans.stream().filter(loan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(loan.getId()))).collect(Collectors.toList());
         if (availableLoans.isEmpty()) {
             return new ResponseEntity<>("You have already applied for all the loans available on the platform! Currently, there are no other options for you at this time", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(availableLoans,HttpStatus.OK);
-        //return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(toList());
     }
 
     @Transactional
     @PostMapping("/")
     public ResponseEntity<?> getALoan(Authentication authentication, @RequestBody LoanApplicationDTO loanApplicationDTO){
         // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientRepository.findByEmail(authentication.getName());
-        Loan loan = loanRepository.findById(loanApplicationDTO.id()).orElse(null);
+        Client client = clientService.getClientByEmail(authentication.getName());
+        Loan loan = loanService.getLoanById(loanApplicationDTO.id());
         ClientDTO clientDTO = new ClientDTO(client);
-        List<LoanDTO> allLoans = loanRepository.findAll().stream().map(eachLoan -> new LoanDTO(eachLoan)).collect(toList());
+        List<LoanDTO> allLoans = loanService.getAllLoansDTO();
         List<LoanDTO> availableLoans = allLoans.stream().filter(eachLoan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(eachLoan.getId()))).collect(Collectors.toList());
         if (availableLoans.isEmpty()) {
             return new ResponseEntity<>("You have already applied for all the loans available on the platform!", HttpStatus.NOT_FOUND);
@@ -81,14 +81,13 @@ public class LoanController {
         if (loanApplicationDTO.installment() < 0) {
             return new ResponseEntity<>("Installments can not be negative",HttpStatus.BAD_REQUEST);
         }
-        // noneMatch me dice que si no hay esa coincidencia me devuelve un "tru" y entra al condiciconal
         if (loan.getPayments().stream().noneMatch(payment -> payment.equals(loanApplicationDTO.installment()))) {
             return new ResponseEntity<>("Installment ["+loanApplicationDTO.installment()+"] is not a available", HttpStatus.BAD_REQUEST);
         }
         if (loanApplicationDTO.destinyAccount().isBlank()) {
             return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
         }
-        Account destinyAccount = accountRepository.findByNumber(loanApplicationDTO.destinyAccount());
+        Account destinyAccount = accountService.getAccountByNumber(loanApplicationDTO.destinyAccount());
         if (destinyAccount == null) {
             return new ResponseEntity<>("Destiny account with number: "+loanApplicationDTO.destinyAccount()+ "does not exist or you typed an space character which is forbidden", HttpStatus.FORBIDDEN);
         }
@@ -98,7 +97,7 @@ public class LoanController {
         ClientLoan newClientLoan = new ClientLoan(loanApplicationDTO.amount(), loanApplicationDTO.installment());
         client.addClientLoan(newClientLoan);
         loan.addClientLoan(newClientLoan);
-        clienLoanRepository.save(newClientLoan);
+        clientLoanService.saveClientLoan(newClientLoan);
         int interestRate;
         if (loanApplicationDTO.installment() < 12) {
             interestRate = 15;
@@ -110,7 +109,7 @@ public class LoanController {
         double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount() + interest;
         Transaction transaction = new Transaction(TransactionType.CREDIT, upDateBalanceDestinyAccount, "Account credited for: ["+loan.getName()+"] loan || Amount: "+loanApplicationDTO.amount()+" || Interest rate "+interestRate+"%: "+interest, dateNow);
         destinyAccount.addTransaction(transaction);
-        transactionRepository.save(transaction);
+        transactionService.saveTransaction(transaction);
         destinyAccount.setBalance(upDateBalanceDestinyAccount);
 
 

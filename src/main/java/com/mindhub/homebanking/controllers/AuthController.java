@@ -9,6 +9,8 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.utils.GenerateAccountNumber;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
 import com.mindhub.homebanking.servicesSecurity.JwtUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,10 +33,9 @@ public class AuthController {
     private PasswordEncoder passwordEncoder; // Codificador de contraseñas para encriptar y verificar contraseñas.
 
     @Autowired
-    private ClientRepository clientRepository; // Repositorio para manejar operaciones CRUD de clientes.
-
+    private ClientService clientService;
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
 
     @Autowired
     private AuthenticationManager authenticationManager; // Administrador de autenticación para manejar el proceso de autenticación.
@@ -75,7 +76,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
         // Verifica si el email ya está registrado en la base de datos.
-        if (clientRepository.findByEmail(registerDTO.email()) != null) {
+        if (clientService.getClientByEmail(registerDTO.email()) != null) {
             return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
         }
 
@@ -99,7 +100,7 @@ public class AuthController {
         // Crea un nuevo cliente con la información proporcionada.
         Client newClient = new Client(registerDTO.firstName(), registerDTO.lastName(), registerDTO.email(), encodedPassword);
         // Guarda el nuevo cliente en la base de datos.
-        clientRepository.save(newClient);
+        clientService.saveClient(newClient);
 
         //---------------------------------------------------CREAR Y ASOCIAR CUENTA AL CLIENTE NUEVO---------------------------------------------
         LocalDateTime date = LocalDateTime.now();
@@ -109,8 +110,7 @@ public class AuthController {
 
         do {
             accountNumber = GenerateAccountNumber.generateSerialNumber();
-            Account account = accountRepository.findByNumber(accountNumber);
-
+            Account account = accountService.getAccountByNumber(accountNumber);
             // Si la cuenta no existe en la base de datos, es única
             if (account == null) {
                 isUnique = true;
@@ -121,7 +121,7 @@ public class AuthController {
         Account newAccount = new Account(accountNumber, date, 0 );
         newAccount.setClient(newClient);
         newClient.addAccount(newAccount);
-        accountRepository.save(newAccount);
+        accountService.saveAccount(newAccount);
         //--------------------------------------------------------------------------------------------------------------------------------
 
         // Retorna una respuesta exitosa con un mensaje de confirmación.
@@ -132,10 +132,10 @@ public class AuthController {
     @GetMapping("/current")
     public ResponseEntity<?> getClient(Authentication authentication) {
         // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.getClientByEmail(authentication.getName());
 
         // Retorna los detalles del cliente en la respuesta.
-        return ResponseEntity.ok(new ClientDTO(client));
+        return ResponseEntity.ok(clientService.getClientDTO(client));
     }
 
 }

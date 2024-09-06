@@ -7,6 +7,8 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.utils.GenerateAccountNumber;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,49 +25,46 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/api/accounts")
 public class AccountController {
     @Autowired
-    private AccountRepository accountRepository;
-
+    private AccountService accountService;
     @Autowired
-    private ClientRepository clientRepository; // Repositorio para manejar operaciones CRUD de clientes.
+    private ClientService clientService;
 
     @GetMapping("/")
     // Maneja las solicitudes GET a la ruta base "/" para obtener todos los clientes.
-    public List<AccountDTO> getAllAccounts() {
-        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(toList());
-
+    public ResponseEntity<List<AccountDTO>> getAllAccounts() {
+        return new ResponseEntity<>(accountService.getAllAccountDTO(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     // Maneja las solicitudes GET para obtener un cliente por ID.
-    public ResponseEntity<AccountDTO> getById(@PathVariable Long id) {
-        return accountRepository.findById(id).map(account -> new AccountDTO(account)) // Convertir Client a ClientDTO
-                .map(ResponseEntity::ok) // Si está presente, devolver 200 OK con el ClientDTO
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        if (accountService.getAccountById(id) == null) {
+            return new ResponseEntity<>("Account not found with id " + id, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(accountService.getAccountDTO(accountService.getAccountById(id)), HttpStatus.OK);
     }
 
 
     @GetMapping("/clients/current/accounts")
     public List<AccountDTO> getClientAccounts(Authentication authentication) {
         // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientRepository.findByEmail(authentication.getName());
-
+        Client client = clientService.getClientByEmail(authentication.getName());
         // Retorna los detalles del cliente en la respuesta.
-        return client.getAccounts().stream().map(account -> new AccountDTO(account)).collect(toList());
+        return client.getAccounts().stream().map(account -> accountService.getAccountDTO(account)).collect(toList());
     }
 
 
     @PostMapping("/clients/current/accounts")
     public ResponseEntity <?> createClientAccounts(Authentication authentication) {
         // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.getClientByEmail(authentication.getName());
 
         String accountNumber;
         boolean isUnique = false;
 
         do {
             accountNumber = GenerateAccountNumber.generateSerialNumber();
-            Account account = accountRepository.findByNumber(accountNumber);
-
+            Account account = accountService.getAccountByNumber(accountNumber);
             // Si la cuenta no existe en la base de datos, es única
             if (account == null) {
                 isUnique = true;
@@ -78,7 +77,7 @@ public class AccountController {
             Account newAccount = new Account(accountNumber, date, 0 );
             newAccount.setClient(client);
             client.addAccount(newAccount);
-            accountRepository.save(newAccount);
+            accountService.saveAccount(newAccount);
             // Retorna los detalles del cliente en la respuesta.
             return new ResponseEntity<>("Account created successfully", HttpStatus.CREATED);
         }

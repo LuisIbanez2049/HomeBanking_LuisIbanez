@@ -10,6 +10,7 @@ public interface ClientService {
     List<Client> getActiveClients();
     List<ClientDTO> getAllActiveClientDTO();
     Client getClientById(Long id);
+    Client getClientByEmail(String email);
     ClientDTO getClientDTO(Client client);
     void saveClient(Client client);
 }

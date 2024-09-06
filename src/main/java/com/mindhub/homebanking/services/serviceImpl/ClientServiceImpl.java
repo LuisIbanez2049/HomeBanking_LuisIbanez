@@ -39,6 +39,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    public Client getClientByEmail(String email) {
+        return clientRepository.findByEmail(email);
+    }
+
+    @Override
     public ClientDTO getClientDTO(Client client) {
         return new ClientDTO(client);
     }

@@ -8,6 +8,10 @@ import com.mindhub.homebanking.models.TransactionType;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.repositories.TransactionRepository;
+import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientLoanService;
+import com.mindhub.homebanking.services.ClientService;
+import com.mindhub.homebanking.services.TransactionService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,24 +29,24 @@ import java.time.LocalDateTime;
 public class TransactionController {
 
     @Autowired
-    private AccountRepository accountRepository;
+    private AccountService accountService;
+    @Autowired
+    private ClientService clientService;
 
     @Autowired
-    private ClientRepository clientRepository; // Repositorio para manejar operaciones CRUD de clientes.
-
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private TransactionService transactionService;
 
     @Transactional
     @PostMapping("/clients/current/transaction")
     public ResponseEntity<?> makeTransaction(Authentication authentication , @RequestBody NewTransactionDTO newTransactionDTO){
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.getClientByEmail(authentication.getName());
         LocalDateTime dateNow = LocalDateTime.now();
-        Account sourceAccount = accountRepository.findByNumber(newTransactionDTO.sourceAccount());
+        //Account sourceAccount = accountRepository.findByNumber(newTransactionDTO.sourceAccount());
+        Account sourceAccount = accountService.getAccountByNumber(newTransactionDTO.sourceAccount());
         if (sourceAccount == null) {
             return new ResponseEntity<>("Source account does not exist", HttpStatus.FORBIDDEN);
         }
-        Account destinyAccount = accountRepository.findByNumber(newTransactionDTO.destinyAccount());
+        Account destinyAccount = accountService.getAccountByNumber(newTransactionDTO.destinyAccount());
         if (destinyAccount == null) {
             return new ResponseEntity<>("Destiny account does not exist", HttpStatus.FORBIDDEN);
         }
@@ -73,16 +77,15 @@ public class TransactionController {
             return new ResponseEntity<>("You don't have enough funds to carry out this transaction. Your balance is: "+sourceAccount.getBalance(), HttpStatus.BAD_REQUEST);
         }
 
-            // Transaction transaction1MelbaAccount1 = new Transaction(TransactionType.CREDIT, 2000, "Rent", dateNow);
             Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(),"Account debited for: ["+newTransactionDTO.description()+"]. Funds were transferred to the account: ["+newTransactionDTO.destinyAccount()+"]", dateNow);
             sourceAccount.addTransaction(newTransaction);
-            transactionRepository.save(newTransaction);
+            transactionService.saveTransaction(newTransaction);
             double upDateBalanceSourceAccount = sourceAccount.getBalance() - newTransactionDTO.amount();
             sourceAccount.setBalance(upDateBalanceSourceAccount);
 
             Transaction destinyTransaction = new Transaction(TransactionType.CREDIT, newTransactionDTO.amount(), "Account credited for: ["+newTransactionDTO.description()+"]. Funds were transferred from the account: ["+newTransactionDTO.sourceAccount()+"]", dateNow);
             destinyAccount.addTransaction(destinyTransaction);
-            transactionRepository.save(destinyTransaction);
+            transactionService.saveTransaction(destinyTransaction);
             double upDateBalanceDestinyAccount = destinyAccount.getBalance() + newTransactionDTO.amount();
             destinyAccount.setBalance(upDateBalanceDestinyAccount);
 

@@ -1,9 +1,7 @@
 package com.mindhub.homebanking.controllers;
 
 import com.mindhub.homebanking.dtos.ClientDTO;
-import com.mindhub.homebanking.dtos.AccountDTO;
 import com.mindhub.homebanking.models.Client;
-import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.services.ClientService;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
@@ -24,10 +22,6 @@ public class ClientController {
     //private ClientRepository clientRepository;
     @Autowired
     private ClientService clientService;
-
-    @Autowired
-    private AccountRepository accountRepository;
-
 
     //-----------------------------SERVLET-------------------------------------------------------
     // Los servlets son los componentes del controlador que reciben una solicitud específica(la cual va a contener el tipo de metodo y la ruta)

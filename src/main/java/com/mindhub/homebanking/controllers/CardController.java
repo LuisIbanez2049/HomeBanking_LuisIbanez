@@ -10,13 +10,14 @@ import com.mindhub.homebanking.models.utils.GenerateCvvNumber;
 import com.mindhub.homebanking.models.utils.GenerateRandomNumber;
 import com.mindhub.homebanking.repositories.CardRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.CardService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
-
 import javax.swing.plaf.synth.ColorType;
 import java.time.LocalDate;
 import java.util.Date;
@@ -28,25 +29,27 @@ import java.util.stream.Collectors;
 public class CardController {
 
     @Autowired
-    private ClientRepository clientRepository; // Repositorio para manejar operaciones CRUD de clientes.
-
+    private ClientService clientService;
     @Autowired
-    private CardRepository cardRepository;
+    private CardService cardService;
 
     @GetMapping("/clients/current/cards")
-    public List<CardDTO> getClient(Authentication authentication) {
+    public ResponseEntity<?> getClient(Authentication authentication) {
         // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientRepository.findByEmail(authentication.getName());
-
+        Client client = clientService.getClientByEmail(authentication.getName());
+        List<CardDTO> cardDTOS = client.getCards().stream().map(card -> cardService.getCardDTO(card)).toList();
+        if (cardDTOS.isEmpty()) {
+            return new ResponseEntity<>("You do not have cards", HttpStatus.NOT_FOUND);
+        }
         // Retorna los detalles del cliente en la respuesta.
-        return client.getCards().stream().map(card -> new CardDTO(card)).collect(Collectors.toList());
+        return new ResponseEntity<>(client.getCards().stream().map(card -> cardService.getCardDTO(card)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @PostMapping("/clients/current/cards")
     public ResponseEntity<?> createCardForCurrentClient (Authentication authentication,@RequestBody NewCardDTO newCardDTO){
         try {
 
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.getClientByEmail(authentication.getName());
         LocalDate date = LocalDate.now();
 
         if (newCardDTO.type().isBlank()) {
@@ -96,7 +99,7 @@ public class CardController {
 
         do {
             cardNumber = GenerateRandomNumber.generateNumberCard();
-            Card card = cardRepository.findByNumber(cardNumber);
+            Card card = cardService.getCardByNumber(cardNumber);
 
             // Si la cuenta no existe en la base de datos, es única
             if (card == null) {
@@ -108,7 +111,7 @@ public class CardController {
             Card newCard = new Card(cardType, cardColor, cardNumber, GenerateCvvNumber.generateNumer(),date,date.plusYears(5) );
             client.addCard(newCard);
             newCard.setClient(client);
-            cardRepository.save(newCard);
+            cardService.saveCard(newCard);
             return new ResponseEntity<>("Created card", HttpStatus.CREATED);
         } catch (Exception e){
             return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
