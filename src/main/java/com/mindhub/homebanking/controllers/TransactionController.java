@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api")
 public class TransactionController {
 
     @Autowired
@@ -37,7 +37,7 @@ public class TransactionController {
     private TransactionService transactionService;
 
     @Transactional
-    @PostMapping("/clients/current/transaction")
+    @PostMapping("/transactions")
     public ResponseEntity<?> makeTransaction(Authentication authentication , @RequestBody NewTransactionDTO newTransactionDTO){
         Client client = clientService.getClientByEmail(authentication.getName());
         LocalDateTime dateNow = LocalDateTime.now();

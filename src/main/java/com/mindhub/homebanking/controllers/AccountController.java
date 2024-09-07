@@ -22,20 +22,21 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 @RestController
-@RequestMapping("/api/accounts")
+//@RequestMapping("/api/accounts")
+@RequestMapping("/api/clients")
 public class AccountController {
     @Autowired
     private AccountService accountService;
     @Autowired
     private ClientService clientService;
 
-    @GetMapping("/")
+    @GetMapping("/accounts")
     // Maneja las solicitudes GET a la ruta base "/" para obtener todos los clientes.
     public ResponseEntity<List<AccountDTO>> getAllAccounts() {
         return new ResponseEntity<>(accountService.getAllAccountDTO(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/accounts/{id}")
     // Maneja las solicitudes GET para obtener un cliente por ID.
     public ResponseEntity<?> getById(@PathVariable Long id) {
         if (accountService.getAccountById(id) == null) {
@@ -45,7 +46,7 @@ public class AccountController {
     }
 
 
-    @GetMapping("/clients/current/accounts")
+    @GetMapping("/current/accounts")
     public List<AccountDTO> getClientAccounts(Authentication authentication) {
         // Obtiene el cliente basado en el nombre de usuario autenticado.
         Client client = clientService.getClientByEmail(authentication.getName());
@@ -54,7 +55,7 @@ public class AccountController {
     }
 
 
-    @PostMapping("/clients/current/accounts")
+    @PostMapping("/current/accounts")
     public ResponseEntity <?> createClientAccounts(Authentication authentication) {
         // Obtiene el cliente basado en el nombre de usuario autenticado.
         Client client = clientService.getClientByEmail(authentication.getName());
@@ -72,9 +73,8 @@ public class AccountController {
 
         } while (!isUnique);
 
-        if (client.getAccounts().toArray().length < 3) {
-            LocalDateTime date = LocalDateTime.now();
-            Account newAccount = new Account(accountNumber, date, 0 );
+        if (client.getAccounts().size() < 3) {
+            Account newAccount = new Account(accountNumber, LocalDateTime.now(), 0 );
             newAccount.setClient(client);
             client.addAccount(newAccount);
             accountService.saveAccount(newAccount);
