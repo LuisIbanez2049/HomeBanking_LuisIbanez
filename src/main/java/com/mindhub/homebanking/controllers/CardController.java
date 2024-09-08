@@ -35,72 +35,15 @@ public class CardController {
 
     @GetMapping("/current/cards")
     public ResponseEntity<?> getCurrentCards(Authentication authentication) {
-        // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientService.getClientByEmail(authentication.getName());
-        List<CardDTO> cardDTOS = client.getCards().stream().map(card -> cardService.getCardDTO(card)).toList();
-        if (cardDTOS.isEmpty()) {
-            return new ResponseEntity<>("You do not have cards", HttpStatus.NOT_FOUND);
-        }
-        // Retorna los detalles del cliente en la respuesta.
-        return new ResponseEntity<>(cardDTOS, HttpStatus.OK);
+        try {
+            return cardService.getAuthenticatedClientCards(authentication);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     @PostMapping("/current/cards")
     public ResponseEntity<?> createCardForCurrentClient (Authentication authentication,@RequestBody NewCardDTO newCardDTO){
         try {
-
-            Client client = clientService.getClientByEmail(authentication.getName());
-            LocalDate date = LocalDate.now();
-
-            if (newCardDTO.type().isBlank()) {
-              return new ResponseEntity<>("Card type must be specified", HttpStatus.BAD_REQUEST);
-            }
-            if (newCardDTO.color().isBlank()) {
-            return new ResponseEntity<>("Card color must be specified", HttpStatus.BAD_REQUEST);
-            }
-            CardType cardType;
-            CardColor cardColor;
-
-            try {
-                cardType = CardType.valueOf(newCardDTO.type().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return new ResponseEntity<>("Not exist the type of card: ["+newCardDTO.type()+"] or you typed an space character which is forbidden", HttpStatus.BAD_REQUEST);
-            }
-
-            try {
-                cardColor = CardColor.valueOf(newCardDTO.color().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return  new ResponseEntity<>("Not exist the color card: ["+newCardDTO.color()+"] or you typed an space character which is forbidden",HttpStatus.BAD_REQUEST);
-            }
-            if (client.getCards().stream().filter(card -> card.getType().equals(cardType)).count() == 3) {
-                return new ResponseEntity<>("You cannot have more than 3 ["+newCardDTO.type().toUpperCase()+"] CARDS", HttpStatus.FORBIDDEN);
-            }
-
-            if (client.getCards().stream().anyMatch(card -> card.getType().equals(cardType) && card.getColor().equals(cardColor) )) {
-              return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
-            }
-
-            String cardNumber;
-            boolean isUnique = false;
-
-            do {
-              cardNumber = GenerateRandomNumber.generateNumberCard();
-              Card card = cardService.getCardByNumber(cardNumber);
-
-              // Si la cuenta no existe en la base de datos, es única
-              if (card == null) {
-                isUnique = true;
-              }
-
-            } while (!isUnique);
-
-            Card newCard = new Card(cardType, cardColor, cardNumber, GenerateCvvNumber.generateNumer(),date,date.plusYears(5) );
-            client.addCard(newCard);
-            newCard.setClient(client);
-            cardService.saveCard(newCard);
-            return new ResponseEntity<>("Created card", HttpStatus.CREATED);
-        }  catch (Exception e){
-            return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return cardService.createNewCardForCurrentClient(authentication, newCardDTO);
+        } catch (Exception e){ return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 }
