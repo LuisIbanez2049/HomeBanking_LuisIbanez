@@ -3,11 +3,13 @@ package com.mindhub.homebanking.controllers;
 import com.mindhub.homebanking.dtos.ClientDTO;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.AccountService;
 import com.mindhub.homebanking.services.ClientService;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,11 +71,7 @@ public class ClientController {
         client.setFirstName(firstName);
         client.setLastName(lastName);
         client.setEmail(email);
-        // Guardo al cliente en la base de datos y me devuelve la entidad guardada con informacion adicional generada por la base de datos como la "id"
-        //Client savedClient = clientRepository.save(client);
         clientService.saveClient(client);
-        // Con ese "client" que guarde en la base de datos que ahora tiene una id, creo un ClientDTO
-        //ClientDTO clientDTO = new ClientDTO(savedClient);
         return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.CREATED);
     }
     //------------------------------------------------------------------------------------
@@ -84,15 +82,11 @@ public class ClientController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClientById(@PathVariable Long id) {
         Client client = clientService.getClientById(id);
-
         if (client == null) {
             return new ResponseEntity<>("Client with ID " + id + " not found.", HttpStatus.NOT_FOUND);
         }
-
         client.setActive(false);
         clientService.saveClient(client);
-        // Eliminar el cliente
-        //clientRepository.delete(client);
         return new ResponseEntity<>("Client with ID " + id + " was deleted.", HttpStatus.OK);
     }
     //------------------------------------------------------------------------------------
@@ -117,8 +111,6 @@ public class ClientController {
         client.setLastName(lastName);
         client.setEmail(email);
         clientService.saveClient(client);
-        //Client updatedClient = clientRepository.save(client);
-        //ClientDTO clientDTO = new ClientDTO(updatedClient);
         return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
     }
     //------------------------------------------------------------------------------------
@@ -148,8 +140,6 @@ public class ClientController {
         if (email != null) {
             client.setEmail(email);
         }
-        //Client updatedClient = clientRepository.save(client);
-        //ClientDTO clientDTO = new ClientDTO(updatedClient);
         clientService.saveClient(client);
         return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
     }

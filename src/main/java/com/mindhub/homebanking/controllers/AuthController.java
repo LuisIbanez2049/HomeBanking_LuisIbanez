@@ -10,6 +10,7 @@ import com.mindhub.homebanking.models.utils.GenerateAccountNumber;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.AuthControllerService;
 import com.mindhub.homebanking.services.ClientService;
 import com.mindhub.homebanking.servicesSecurity.JwtUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ public class AuthController {
     private ClientService clientService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private AuthControllerService authControllerService;
 
     @Autowired
     private AuthenticationManager authenticationManager; // Administrador de autenticación para manejar el proceso de autenticación.
@@ -53,8 +56,7 @@ public class AuthController {
             System.out.println("Login attempt for: " + loginDTO.email()); // Registra el intento de inicio de sesión.
 
             // Autentica al usuario usando el email y la contraseña proporcionados.
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDTO.email(), loginDTO.password()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.email(), loginDTO.password()));
 
             // Carga los detalles del usuario después de la autenticación.
             final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.email());
@@ -75,57 +77,9 @@ public class AuthController {
     // Endpoint para registrar un nuevo cliente.
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
-        // Verifica si el email ya está registrado en la base de datos.
-        if (clientService.getClientByEmail(registerDTO.email()) != null) {
-            return new ResponseEntity<>("Email already exists", HttpStatus.BAD_REQUEST);
-        }
-
-        // Verifica si el nombre y apellido no están vacíos.
-        if (registerDTO.firstName().isBlank()) {
-            return new ResponseEntity<>("First name cannot be empty", HttpStatus.BAD_REQUEST);
-        }
-        // Verifica si el nombre y apellido no están vacíos.
-        if (registerDTO.lastName().isBlank()) {
-            return new ResponseEntity<>("Last name cannot be empty", HttpStatus.BAD_REQUEST);
-        }
-
-        // Verifica si la contraseña cumple con el requisito mínimo de longitud.
-        if (registerDTO.password().length() < 8) {
-            return new ResponseEntity<>("Password must be at least 8 characters long", HttpStatus.BAD_REQUEST);
-        }
-
-        // Codifica la contraseña antes de almacenarla.
-        String encodedPassword = passwordEncoder.encode(registerDTO.password());
-
-        // Crea un nuevo cliente con la información proporcionada.
-        Client newClient = new Client(registerDTO.firstName(), registerDTO.lastName(), registerDTO.email(), encodedPassword);
-        // Guarda el nuevo cliente en la base de datos.
-        clientService.saveClient(newClient);
-
-        //---------------------------------------------------CREAR Y ASOCIAR CUENTA AL CLIENTE NUEVO---------------------------------------------
-        LocalDateTime date = LocalDateTime.now();
-        //------------------------------------------------------------------------------------------------------------------
-        String accountNumber;
-        boolean isUnique = false;
-
-        do {
-            accountNumber = GenerateAccountNumber.generateSerialNumber();
-            Account account = accountService.getAccountByNumber(accountNumber);
-            // Si la cuenta no existe en la base de datos, es única
-            if (account == null) {
-                isUnique = true;
-            }
-
-        } while (!isUnique);
-        //-------------------------------------------------------------------------------------------------------------------
-        Account newAccount = new Account(accountNumber, date, 0 );
-        newAccount.setClient(newClient);
-        newClient.addAccount(newAccount);
-        accountService.saveAccount(newAccount);
-        //--------------------------------------------------------------------------------------------------------------------------------
-
-        // Retorna una respuesta exitosa con un mensaje de confirmación.
-        return new ResponseEntity<>("Client registered successfully", HttpStatus.CREATED);
+        try {
+            return authControllerService.registerNewClient(registerDTO);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     // Endpoint para obtener los detalles del cliente autenticado.

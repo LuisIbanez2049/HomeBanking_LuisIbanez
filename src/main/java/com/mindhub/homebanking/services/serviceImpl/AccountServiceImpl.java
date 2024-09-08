@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
-    private AccountRepository accountRepository;
+    AccountRepository accountRepository;
     @Autowired
-    private ClientService clientService;
+    ClientService clientService;
 
     @Override
     public List<Account> getAllAccounts() {

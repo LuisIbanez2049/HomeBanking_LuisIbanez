@@ -27,8 +27,6 @@ import static java.util.stream.Collectors.toList;
 public class AccountController {
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private ClientService clientService;
 
     @GetMapping("/accounts")
     // Maneja las solicitudes GET a la ruta base "/" para obtener todos los clientes.
