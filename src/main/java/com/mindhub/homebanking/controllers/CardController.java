@@ -35,7 +35,7 @@ public class CardController {
     public ResponseEntity<?> getCurrentCards(Authentication authentication) {
         try {
             return cardService.getAuthenticatedClientCards(authentication);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     @PostMapping("/current/cards")

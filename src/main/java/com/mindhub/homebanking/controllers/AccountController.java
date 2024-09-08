@@ -33,7 +33,7 @@ public class AccountController {
     public ResponseEntity<?> getAllAccounts() {
         try {
             return new ResponseEntity<>(accountService.getAllAccountDTO(), HttpStatus.OK);
-        }catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     @GetMapping("/accounts/{id}")
@@ -41,7 +41,7 @@ public class AccountController {
     public ResponseEntity<?> getAccountById(@PathVariable Long id) {
         try {
             return accountService.obtainAccountById(id);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
 
@@ -49,7 +49,7 @@ public class AccountController {
     public ResponseEntity<?> getClientAccounts(Authentication authentication) {
         try {
             return new ResponseEntity<>(accountService.getAllAccountDTOfromAuthenticationClient(authentication), HttpStatus.OK);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
 
@@ -57,7 +57,7 @@ public class AccountController {
     public ResponseEntity <?> createClientAccounts(Authentication authentication) {
         try {
             return accountService.createAccountForAuthenticatedClient(authentication);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
 }

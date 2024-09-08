@@ -79,7 +79,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
         try {
             return authControllerService.registerNewClient(registerDTO);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     // Endpoint para obtener los detalles del cliente autenticado.
@@ -88,7 +88,7 @@ public class AuthController {
         try {
             Client client = clientService.getClientByEmail(authentication.getName());
             return ResponseEntity.ok(clientService.getClientDTO(client));
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
 

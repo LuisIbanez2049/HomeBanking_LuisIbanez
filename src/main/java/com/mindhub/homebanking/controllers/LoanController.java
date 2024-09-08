@@ -37,14 +37,17 @@ public class LoanController {
 
     @GetMapping("/")
     public ResponseEntity<?> getAllAuthenticatedClientLoans(Authentication authentication){
-        Client client = clientService.getClientByEmail(authentication.getName());
-        ClientDTO clientDTO = new ClientDTO(client);
-        List<LoanDTO> allLoans = loanService.getAllLoansDTO();
-        List<LoanDTO> availableLoans = allLoans.stream().filter(loan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(loan.getId()))).collect(Collectors.toList());
-        if (availableLoans.isEmpty()) {
-            return new ResponseEntity<>("You have already applied for all the loans available on the platform! Currently, there are no other options for you at this time", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(availableLoans,HttpStatus.OK);
+        try {
+            Client client = clientService.getClientByEmail(authentication.getName());
+            ClientDTO clientDTO = new ClientDTO(client);
+            List<LoanDTO> allLoans = loanService.getAllLoansDTO();
+            List<LoanDTO> availableLoans = allLoans.stream().filter(loan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(loan.getId()))).collect(Collectors.toList());
+            if (availableLoans.isEmpty()) {
+                return new ResponseEntity<>("You have already applied for all the loans available on the platform! Currently, there are no other options for you at this time", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(availableLoans,HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+
     }
 
     @Transactional

@@ -58,7 +58,7 @@ public class ClientController {
                 return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(clientService.getClientDTO(clientService.getClientById(id)), HttpStatus.OK);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
     //------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ public class ClientController {
             client.setEmail(email);
             clientService.saveClient(client);
             return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.CREATED);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
     //------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ public class ClientController {
             client.setActive(false);
             clientService.saveClient(client);
             return new ResponseEntity<>("Client with ID " + id + " was deleted.", HttpStatus.OK);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
     //------------------------------------------------------------------------------------
 
@@ -121,7 +121,7 @@ public class ClientController {
             client.setEmail(email);
             clientService.saveClient(client);
             return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
     //------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ public class ClientController {
             }
             clientService.saveClient(client);
             return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
-        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
 
