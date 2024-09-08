@@ -27,9 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/clients")
 public class CardController {
-
-    @Autowired
-    private ClientService clientService;
+    
     @Autowired
     private CardService cardService;
 

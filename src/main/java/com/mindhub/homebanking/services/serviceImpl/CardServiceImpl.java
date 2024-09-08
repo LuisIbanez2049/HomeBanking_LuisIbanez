@@ -28,10 +28,10 @@ public class CardServiceImpl implements CardService {
     @Autowired
     private ClientService clientService;
 
-    @Override
-    public Client getAuthenticatedClient(Authentication authentication) {
-        return clientService.getClientByEmail(authentication.getName());
-    }
+//    @Override
+//    public Client getAuthenticatedClient(Authentication authentication) {
+//        return clientService.getClientByEmail(authentication.getName());
+//    }
     @Override
     public Card getCardByNumber(String number) {
         return cardRepository.findByNumber(number);
@@ -49,7 +49,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<CardDTO> getCurrentClientCards(Client authenticateClient) {
-        return authenticateClient.getCards().stream().map(card -> new CardDTO(card)).toList();
+        return authenticateClient.getCards().stream().map(card -> getCardDTO(card)).toList();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ResponseEntity<?> createNewCardForCurrentClient(Authentication authentication, NewCardDTO newCardDTO) {
-        Client authenticatedClient = getAuthenticatedClient(authentication);
+        Client authenticatedClient = clientService.getAuthenticatedClientByEmail(authentication);
         if (parameterIsBlank(newCardDTO.type())) { return responseParameterIsBlank("type");}
         if (parameterIsBlank(newCardDTO.color())) { return responseParameterIsBlank("color");}
         CardType cardType;
@@ -124,9 +124,9 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ResponseEntity<?> getAuthenticatedClientCards(Authentication authentication) {
-        if (authenticatedClientHaveCards(getAuthenticatedClient(authentication))) {
+        if (authenticatedClientHaveCards(clientService.getAuthenticatedClientByEmail(authentication))) {
             return new ResponseEntity<>("You do not have cards", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(getCurrentClientCards(getAuthenticatedClient(authentication)), HttpStatus.OK);
+        return new ResponseEntity<>(getCurrentClientCards(clientService.getAuthenticatedClientByEmail(authentication)), HttpStatus.OK);
     }
 }

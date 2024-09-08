@@ -14,7 +14,7 @@ import java.util.List;
 public interface CardService {
     Card getCardByNumber(String number);
     CardDTO getCardDTO(Card card);
-    Client getAuthenticatedClient(Authentication authentication);
+    //Client getAuthenticatedClient(Authentication authentication);
     void saveCard(Card card);
 
     List<CardDTO> getCurrentClientCards(Client authenticateClient);

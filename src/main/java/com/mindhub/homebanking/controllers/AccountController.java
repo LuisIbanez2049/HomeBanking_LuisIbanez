@@ -32,57 +32,34 @@ public class AccountController {
 
     @GetMapping("/accounts")
     // Maneja las solicitudes GET a la ruta base "/" para obtener todos los clientes.
-    public ResponseEntity<List<AccountDTO>> getAllAccounts() {
-        return new ResponseEntity<>(accountService.getAllAccountDTO(), HttpStatus.OK);
+    public ResponseEntity<?> getAllAccounts() {
+        try {
+            return new ResponseEntity<>(accountService.getAllAccountDTO(), HttpStatus.OK);
+        }catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
     @GetMapping("/accounts/{id}")
     // Maneja las solicitudes GET para obtener un cliente por ID.
-    public ResponseEntity<?> getById(@PathVariable Long id) {
-        if (accountService.getAccountById(id) == null) {
-            return new ResponseEntity<>("Account not found with id " + id, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(accountService.getAccountDTO(accountService.getAccountById(id)), HttpStatus.OK);
+    public ResponseEntity<?> getAccountById(@PathVariable Long id) {
+        try {
+            return accountService.obtainAccountById(id);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
 
     @GetMapping("/current/accounts")
-    public List<AccountDTO> getClientAccounts(Authentication authentication) {
-        // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientService.getClientByEmail(authentication.getName());
-        // Retorna los detalles del cliente en la respuesta.
-        return client.getAccounts().stream().map(account -> accountService.getAccountDTO(account)).collect(toList());
+    public ResponseEntity<?> getClientAccounts(Authentication authentication) {
+        try {
+            return new ResponseEntity<>(accountService.getAllAccountDTOfromAuthenticationClient(authentication), HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
 
     @PostMapping("/current/accounts")
     public ResponseEntity <?> createClientAccounts(Authentication authentication) {
-        // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientService.getClientByEmail(authentication.getName());
-
-        String accountNumber;
-        boolean isUnique = false;
-
-        do {
-            accountNumber = GenerateAccountNumber.generateSerialNumber();
-            Account account = accountService.getAccountByNumber(accountNumber);
-            // Si la cuenta no existe en la base de datos, es única
-            if (account == null) {
-                isUnique = true;
-            }
-
-        } while (!isUnique);
-
-        if (client.getAccounts().size() < 3) {
-            Account newAccount = new Account(accountNumber, LocalDateTime.now(), 0 );
-            newAccount.setClient(client);
-            client.addAccount(newAccount);
-            accountService.saveAccount(newAccount);
-            // Retorna los detalles del cliente en la respuesta.
-            return new ResponseEntity<>("Account created successfully", HttpStatus.CREATED);
-        }
-
-        return new ResponseEntity<>("You can't have more than 3 accounts", HttpStatus.FORBIDDEN);
+        try {
+            return accountService.createAccountForAuthenticatedClient(authentication);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
 }
