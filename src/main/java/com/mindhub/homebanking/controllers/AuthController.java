@@ -85,11 +85,11 @@ public class AuthController {
     // Endpoint para obtener los detalles del cliente autenticado.
     @GetMapping("/current")
     public ResponseEntity<?> getClient(Authentication authentication) {
-        // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientService.getClientByEmail(authentication.getName());
+        try {
+            Client client = clientService.getClientByEmail(authentication.getName());
+            return ResponseEntity.ok(clientService.getClientDTO(client));
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
-        // Retorna los detalles del cliente en la respuesta.
-        return ResponseEntity.ok(clientService.getClientDTO(client));
     }
 
 }

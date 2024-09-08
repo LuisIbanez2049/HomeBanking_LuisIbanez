@@ -36,7 +36,7 @@ public class LoanController {
     private TransactionService transactionService;
 
     @GetMapping("/")
-    public ResponseEntity<?> getAllLoans(Authentication authentication){
+    public ResponseEntity<?> getAllAuthenticatedClientLoans(Authentication authentication){
         Client client = clientService.getClientByEmail(authentication.getName());
         ClientDTO clientDTO = new ClientDTO(client);
         List<LoanDTO> allLoans = loanService.getAllLoansDTO();
@@ -49,70 +49,9 @@ public class LoanController {
 
     @Transactional
     @PostMapping("/")
-    public ResponseEntity<?> getALoan(Authentication authentication, @RequestBody LoanApplicationDTO loanApplicationDTO){
-        // Obtiene el cliente basado en el nombre de usuario autenticado.
-        Client client = clientService.getClientByEmail(authentication.getName());
-        Loan loan = loanService.getLoanById(loanApplicationDTO.id());
-        ClientDTO clientDTO = new ClientDTO(client);
-        List<LoanDTO> allLoans = loanService.getAllLoansDTO();
-        List<LoanDTO> availableLoans = allLoans.stream().filter(eachLoan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(eachLoan.getId()))).collect(Collectors.toList());
-        if (availableLoans.isEmpty()) {
-            return new ResponseEntity<>("You have already applied for all the loans available on the platform!", HttpStatus.NOT_FOUND);
-        }
-
-        if (loan == null) {
-            return new ResponseEntity<>("Loan not found with id " + loanApplicationDTO.id(), HttpStatus.NOT_FOUND);
-        }
-        if (clientDTO.getLoans().stream().anyMatch(eachLoan -> eachLoan.getLoanId().equals(loanApplicationDTO.id()))) {
-            return new ResponseEntity<>("You already have a loan with the name ["+loan.getName()+"] and the id ["+loanApplicationDTO.id()+"]",HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.amount() == 0) {
-            return new ResponseEntity<>("Amount must be specified",HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.amount() < 0) {
-            return new ResponseEntity<>("Amount can not be negative",HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.amount() > loan.getMaxAmount()) {
-            return new ResponseEntity<>("You can not apply for a loan greater than: "+loan.getMaxAmount(),HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.installment() == null || loanApplicationDTO.installment() == 0) {
-            return new ResponseEntity<>("Installments must be specified",HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.installment() < 0) {
-            return new ResponseEntity<>("Installments can not be negative",HttpStatus.BAD_REQUEST);
-        }
-        if (loan.getPayments().stream().noneMatch(payment -> payment.equals(loanApplicationDTO.installment()))) {
-            return new ResponseEntity<>("Installment ["+loanApplicationDTO.installment()+"] is not a available", HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.destinyAccount().isBlank()) {
-            return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
-        }
-        Account destinyAccount = accountService.getAccountByNumber(loanApplicationDTO.destinyAccount());
-        if (destinyAccount == null) {
-            return new ResponseEntity<>("Destiny account with number: "+loanApplicationDTO.destinyAccount()+ "does not exist or you typed an space character which is forbidden", HttpStatus.FORBIDDEN);
-        }
-        if (client.getAccounts().stream().noneMatch(account -> account.getNumber().equals(loanApplicationDTO.destinyAccount()))) {
-            return new ResponseEntity<>("You do not have an account with number: "+loanApplicationDTO.destinyAccount(), HttpStatus.FORBIDDEN);
-        }
-        ClientLoan newClientLoan = new ClientLoan(loanApplicationDTO.amount(), loanApplicationDTO.installment());
-        client.addClientLoan(newClientLoan);
-        loan.addClientLoan(newClientLoan);
-        clientLoanService.saveClientLoan(newClientLoan);
-        int interestRate;
-        if (loanApplicationDTO.installment() < 12) {
-            interestRate = 15;
-        } else if (loanApplicationDTO.installment() == 12) {
-            interestRate = 20;
-        } else interestRate = 25;
-        LocalDateTime dateNow = LocalDateTime.now();
-        double interest = (loanApplicationDTO.amount() * interestRate) / 100;
-        double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount() + interest;
-        Transaction transaction = new Transaction(TransactionType.CREDIT, upDateBalanceDestinyAccount, "Account credited for: ["+loan.getName()+"] loan || Amount: "+loanApplicationDTO.amount()+" || Interest rate "+interestRate+"%: "+interest, dateNow);
-        destinyAccount.addTransaction(transaction);
-        transactionService.saveTransaction(transaction);
-        destinyAccount.setBalance(upDateBalanceDestinyAccount);
-
-
-        return new ResponseEntity<>(loan.getName()+" loan approved", HttpStatus.CREATED);
+    public ResponseEntity<?> applyForALoan(Authentication authentication, @RequestBody LoanApplicationDTO loanApplicationDTO){
+        try {
+            return loanService.giveLoanToClient(authentication, loanApplicationDTO);
+        } catch (Exception e){ return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 }

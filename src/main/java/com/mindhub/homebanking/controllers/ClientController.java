@@ -50,13 +50,16 @@ public class ClientController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) { // con "@PathVariable" indico que va a recibir por paramtro a traves de la ruta
                                                                     // un valor que va a ser variable
-        if (clientService.getClientById(id) == null) {
-            return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
-        }
-        if (!clientService.getClientById(id).isActive()) {
-            return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(clientService.getClientDTO(clientService.getClientById(id)), HttpStatus.OK);
+        try {
+            if (clientService.getClientById(id) == null) {
+                return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
+            }
+            if (!clientService.getClientById(id).isActive()) {
+                return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(clientService.getClientDTO(clientService.getClientById(id)), HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+
     }
     //------------------------------------------------------------------------------------
 
@@ -66,13 +69,16 @@ public class ClientController {
     //ResponseEntity<ClientDTO> me devuelve el objeto y respuesta http con un codigo de estado
 
     @PostMapping("/create")  // Indico que este servlet va a resibir una petición de tipo "post" asociado a la ruta "/create"
-    public ResponseEntity<ClientDTO> createClient(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
-        Client client = new Client();
-        client.setFirstName(firstName);
-        client.setLastName(lastName);
-        client.setEmail(email);
-        clientService.saveClient(client);
-        return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.CREATED);
+    public ResponseEntity<?> createClient(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
+        try {
+            Client client = new Client();
+            client.setFirstName(firstName);
+            client.setLastName(lastName);
+            client.setEmail(email);
+            clientService.saveClient(client);
+            return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.CREATED);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+
     }
     //------------------------------------------------------------------------------------
 
@@ -81,13 +87,15 @@ public class ClientController {
     //-----------------------------SERVLET-------------------------------------------------------
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClientById(@PathVariable Long id) {
-        Client client = clientService.getClientById(id);
-        if (client == null) {
-            return new ResponseEntity<>("Client with ID " + id + " not found.", HttpStatus.NOT_FOUND);
-        }
-        client.setActive(false);
-        clientService.saveClient(client);
-        return new ResponseEntity<>("Client with ID " + id + " was deleted.", HttpStatus.OK);
+        try {
+            Client client = clientService.getClientById(id);
+            if (client == null) {
+                return new ResponseEntity<>("Client with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+            }
+            client.setActive(false);
+            clientService.saveClient(client);
+            return new ResponseEntity<>("Client with ID " + id + " was deleted.", HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
     //------------------------------------------------------------------------------------
 
@@ -100,18 +108,21 @@ public class ClientController {
             @RequestParam String firstName,
             @RequestParam String lastName,
             @RequestParam String email) {
-        Client client = clientService.getClientById(id);
-        if (client == null) {
-            return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
-        }
-        if (!client.isActive()) {
-            return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
-        }
-        client.setFirstName(firstName);
-        client.setLastName(lastName);
-        client.setEmail(email);
-        clientService.saveClient(client);
-        return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
+        try {
+            Client client = clientService.getClientById(id);
+            if (client == null) {
+                return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
+            }
+            if (!client.isActive()) {
+                return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
+            }
+            client.setFirstName(firstName);
+            client.setLastName(lastName);
+            client.setEmail(email);
+            clientService.saveClient(client);
+            return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+
     }
     //------------------------------------------------------------------------------------
 
@@ -124,24 +135,27 @@ public class ClientController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String email) {
-        Client client = clientService.getClientById(id);
-        if (client == null) {
-            return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
-        }
-        if (!client.isActive()) {
-            return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
-        }
-        if (firstName != null) {
-            client.setFirstName(firstName);
-        }
-        if (lastName != null) {
-            client.setLastName(lastName);
-        }
-        if (email != null) {
-            client.setEmail(email);
-        }
-        clientService.saveClient(client);
-        return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
+        try {
+            Client client = clientService.getClientById(id);
+            if (client == null) {
+                return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
+            }
+            if (!client.isActive()) {
+                return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
+            }
+            if (firstName != null) {
+                client.setFirstName(firstName);
+            }
+            if (lastName != null) {
+                client.setLastName(lastName);
+            }
+            if (email != null) {
+                client.setEmail(email);
+            }
+            clientService.saveClient(client);
+            return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
+        } catch (Exception e) { return new ResponseEntity<>("Error creating card: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+
     }
 
 }
