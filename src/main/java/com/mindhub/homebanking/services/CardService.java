@@ -1,11 +1,10 @@
 package com.mindhub.homebanking.services;
 
+import com.mindhub.homebanking.dtos.AccountDTO;
 import com.mindhub.homebanking.dtos.CardDTO;
 import com.mindhub.homebanking.dtos.NewCardDTO;
-import com.mindhub.homebanking.models.Card;
-import com.mindhub.homebanking.models.CardColor;
-import com.mindhub.homebanking.models.CardType;
-import com.mindhub.homebanking.models.Client;
+import com.mindhub.homebanking.dtos.NewTransactionDTO;
+import com.mindhub.homebanking.models.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 

@@ -40,30 +40,7 @@ public class TransactionController {
     @PostMapping("/transactions")
     public ResponseEntity<?> makeTransaction(Authentication authentication , @RequestBody NewTransactionDTO newTransactionDTO){
       try {
-          Client client = clientService.getClientByEmail(authentication.getName());
-          LocalDateTime dateNow = LocalDateTime.now();
-          Account sourceAccount = accountService.getAccountByNumber(newTransactionDTO.sourceAccount());
-          Account destinyAccount = accountService.getAccountByNumber(newTransactionDTO.destinyAccount());
-
-          // Call makeValidations to check if there are any errors
-          ResponseEntity<?> validationResult = transactionService.makeValidations(client, sourceAccount, newTransactionDTO);
-          // If makeValidations returns an error, return it
-          if (validationResult != null) {
-              return validationResult;
-          }
-          Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(),"Account debited for: ["+newTransactionDTO.description()+"]. Funds were transferred to the account: ["+newTransactionDTO.destinyAccount()+"]", dateNow);
-          sourceAccount.addTransaction(newTransaction);
-          transactionService.saveTransaction(newTransaction);
-          double upDateBalanceSourceAccount = sourceAccount.getBalance() - newTransactionDTO.amount();
-          sourceAccount.setBalance(upDateBalanceSourceAccount);
-
-          Transaction destinyTransaction = new Transaction(TransactionType.CREDIT, newTransactionDTO.amount(), "Account credited for: ["+newTransactionDTO.description()+"]. Funds were transferred from the account: ["+newTransactionDTO.sourceAccount()+"]", dateNow);
-          destinyAccount.addTransaction(destinyTransaction);
-          transactionService.saveTransaction(destinyTransaction);
-          double upDateBalanceDestinyAccount = destinyAccount.getBalance() + newTransactionDTO.amount();
-          destinyAccount.setBalance(upDateBalanceDestinyAccount);
-
-          return new ResponseEntity<>("Successful transaction",HttpStatus.CREATED);
+          return transactionService.authenticatedClientMakeTransaction(authentication, newTransactionDTO);
       } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }

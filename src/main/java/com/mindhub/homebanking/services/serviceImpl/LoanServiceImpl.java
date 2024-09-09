@@ -106,7 +106,6 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public void associateNewClientLoan(ClientLoan newClientLoan, Client client, Loan loan) {
-        //ClientLoan newClientLoan = new ClientLoan(loanApplicationDTO.amount(), loanApplicationDTO.installment());
         client.addClientLoan(newClientLoan);
         loan.addClientLoan(newClientLoan);
         clientLoanService.saveClientLoan(newClientLoan);
@@ -123,11 +122,50 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    public String customAnswer(int interestRateAccordingCantOfInstallments) {
+        if (interestRateAccordingCantOfInstallments < 12) {
+            return "due to you selected less than 12 installments";
+        } else if (interestRateAccordingCantOfInstallments == 12) {
+            return "due to you selected 12 installments";
+        }
+        return "due to you selected more than 12 installments";
+    }
+
+    @Override
+    public double applicatedInterest(LoanApplicationDTO loanApplicationDTO) {
+        return (loanApplicationDTO.amount() * interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())) / 100;
+    }
+
+    @Override
+    public void updateAuthenticatedClientAccount(LoanApplicationDTO loanApplicationDTO, Account destinyAccount, Loan loan) {
+        double interest = (loanApplicationDTO.amount() * interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())) / 100;
+        double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount();
+        Transaction transaction = new Transaction(TransactionType.CREDIT, loanApplicationDTO.amount(), "Account credited for: ["+loan.getName()+"] loan", LocalDateTime.now());
+        destinyAccount.addTransaction(transaction);
+        transactionService.saveTransaction(transaction);
+        destinyAccount.setBalance(upDateBalanceDestinyAccount);
+    }
+
+    @Override
+    public List<LoanDTO> availableCurrentClientLoans(ClientDTO clientDTO) {
+        List<LoanDTO> allLoans = getAllLoansDTO();
+        return allLoans.stream().filter(loan -> clientDTO.getLoans().stream().noneMatch(loanClient -> loanClient.getLoanId().equals(loan.getId()))).collect(Collectors.toList());
+    }
+
+    @Override
+    public ResponseEntity<?> getAvailableCurrentClientLoans(Authentication authentication) {
+        List<LoanDTO> availableLoans = availableCurrentClientLoans(clientService.getClientDTO(clientService.getClientByEmail(authentication.getName())));
+        if (availableLoans.isEmpty()) {
+            return new ResponseEntity<>("You have already applied for all the loans available on the platform! Currently, there are no other options for you at this time", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(availableLoans,HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<?> giveLoanToClient(Authentication authentication, LoanApplicationDTO loanApplicationDTO) {
         Client client = clientService.getClientByEmail(authentication.getName());
         Loan loan = getLoanById(loanApplicationDTO.id());
         ClientDTO clientDTO = clientService.getClientDTO(client);
-        List<LoanDTO> allLoans = getAllLoansDTO();
         Account destinyAccount = accountService.getAccountByNumber(loanApplicationDTO.destinyAccount());
         // Call makeValidations to check if there are any errors
         ResponseEntity<?> validationResult = makeValidations(clientDTO, client, loanApplicationDTO, loan, destinyAccount);
@@ -135,15 +173,11 @@ public class LoanServiceImpl implements LoanService {
         if (validationResult != null) {
             return validationResult;
         }
-        //return makeValidations(clientDTO, client, loanApplicationDTO, loan, destinyAccount);
-        ClientLoan newClientLoan = new ClientLoan(loanApplicationDTO.amount(), loanApplicationDTO.installment());
+        ClientLoan newClientLoan = new ClientLoan(applicatedInterest(loanApplicationDTO) + loanApplicationDTO.amount(), loanApplicationDTO.installment());
         associateNewClientLoan(newClientLoan, client, loan);
-        double interest = (loanApplicationDTO.amount() * interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())) / 100;
-        double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount() + interest;
-        Transaction transaction = new Transaction(TransactionType.CREDIT, upDateBalanceDestinyAccount, "Account credited for: ["+loan.getName()+"] loan || Amount: "+loanApplicationDTO.amount()+" || Interest rate "+interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"%: "+interest, LocalDateTime.now());
-        destinyAccount.addTransaction(transaction);
-        transactionService.saveTransaction(transaction);
-        destinyAccount.setBalance(upDateBalanceDestinyAccount);
-        return new ResponseEntity<>(loan.getName()+" loan approved", HttpStatus.CREATED);
+        updateAuthenticatedClientAccount(loanApplicationDTO, destinyAccount, loan);
+        return new ResponseEntity<>(loan.getName()+" loan approved"+" || Required Amount: $"+loanApplicationDTO.amount()+" || You must pay an interest rate of "+
+                interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
+                " || Interest equivalent to: $"+applicatedInterest(loanApplicationDTO)+" || Total to pay: $"+ (loanApplicationDTO.amount()+applicatedInterest(loanApplicationDTO)), HttpStatus.CREATED);
     }
 }

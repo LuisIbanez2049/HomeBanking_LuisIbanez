@@ -23,4 +23,10 @@ public interface LoanService {
     void associateNewClientLoan(ClientLoan newClientLoan, Client client, Loan loan);
     int interestRateAccordingCantOfInstallments(Integer installments);
     ResponseEntity<?> giveLoanToClient(Authentication authentication, LoanApplicationDTO loanApplicationDTO);
+    void updateAuthenticatedClientAccount(LoanApplicationDTO loanApplicationDTO, Account destinyAccount, Loan loan);
+    List<LoanDTO> availableCurrentClientLoans(ClientDTO clientDTO);
+    ResponseEntity<?> getAvailableCurrentClientLoans(Authentication authentication);
+    double applicatedInterest(LoanApplicationDTO loanApplicationDTO);
+    String customAnswer(int interestRateAccordingCantOfInstallments);
+
 }
