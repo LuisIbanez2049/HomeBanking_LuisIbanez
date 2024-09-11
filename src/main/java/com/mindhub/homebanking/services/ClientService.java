@@ -17,5 +17,14 @@ public interface ClientService {
     Client getClientByEmail(String email);
     ClientDTO getClientDTO(Client client);
     void saveClient(Client client);
-
+    ResponseEntity<?> getAllClientsDTO();
+    ResponseEntity<?> makeValidationsClientByID(Long id);
+    ResponseEntity<?> getClientBYIDFunction(Long id);
+    ResponseEntity<?> makeValidationsCreateClient(String firstName, String lastName, String email);
+    Client createAnewClient(String firstName, String lastName, String email);
+    ResponseEntity<?> createClientFunction(String firstName, String lastName, String email);
+    ResponseEntity<?> deleteClientByIdFunction(Long id);
+    ResponseEntity<?> upDateClientFunction(Long id, String firstName, String lastName, String email);
+    ResponseEntity<?> partialUpdateClientFunction(Long id, String firstName, String lastName, String email);
+    void updatePartialAttributes(Client client, String firstName, String lastName, String email);
 }

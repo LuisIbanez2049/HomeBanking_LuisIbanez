@@ -31,11 +31,12 @@ public class ClientController {
     //Este servlet en particular va a responder a la solicitud de tipo "get" con la ruta "/"
 
     @GetMapping("/")  // Indico que este servlet va a recibir una petición con el método "get" asociado a la ruta "/"
-    public ResponseEntity<List<ClientDTO>> getAllActiveClients() {
-        return new ResponseEntity<>(clientService.getAllActiveClientDTO(), HttpStatus.OK);
+    public ResponseEntity<?> getAllActiveClients() {
+        try {
+            return clientService.getAllClientsDTO();
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
     //------------------------------------------------------------------------------------
-
 
     //-----------------------------SERVLET-------------------------------------------------------
     @GetMapping("/hello")  // La ruta completa para invocar este método seria "http://localhost:8080/api/clients/hello"
@@ -44,62 +45,35 @@ public class ClientController {
     }
     //------------------------------------------------------------------------------------
 
-
-
     //-----------------------------SERVLET-------------------------------------------------------
     @GetMapping("/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) { // con "@PathVariable" indico que va a recibir por paramtro a traves de la ruta
                                                                     // un valor que va a ser variable
         try {
-            if (clientService.getClientById(id) == null) {
-                return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
-            }
-            if (!clientService.getClientById(id).isActive()) {
-                return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(clientService.getClientDTO(clientService.getClientById(id)), HttpStatus.OK);
+            return clientService.getClientBYIDFunction(id);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
     //------------------------------------------------------------------------------------
 
-
-
     //-----------------------------SERVLET-------------------------------------------------------
-    //ResponseEntity<ClientDTO> me devuelve el objeto y respuesta http con un codigo de estado
-
     @PostMapping("/create")  // Indico que este servlet va a resibir una petición de tipo "post" asociado a la ruta "/create"
     public ResponseEntity<?> createClient(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String email) {
         try {
-            Client client = new Client();
-            client.setFirstName(firstName);
-            client.setLastName(lastName);
-            client.setEmail(email);
-            clientService.saveClient(client);
-            return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.CREATED);
+            return clientService.createClientFunction(firstName, lastName, email);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
     //------------------------------------------------------------------------------------
-
-
 
     //-----------------------------SERVLET-------------------------------------------------------
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteClientById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteClientById(@PathVariable Long id) {
         try {
-            Client client = clientService.getClientById(id);
-            if (client == null) {
-                return new ResponseEntity<>("Client with ID " + id + " not found.", HttpStatus.NOT_FOUND);
-            }
-            client.setActive(false);
-            clientService.saveClient(client);
-            return new ResponseEntity<>("Client with ID " + id + " was deleted.", HttpStatus.OK);
+            return clientService.deleteClientByIdFunction(id);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
     //------------------------------------------------------------------------------------
-
-
 
     //-----------------------------SERVLET-------------------------------------------------------
     @PutMapping("/update/{id}") // Con "PUT" indico que voy a modificar todas las propiedades
@@ -109,24 +83,11 @@ public class ClientController {
             @RequestParam String lastName,
             @RequestParam String email) {
         try {
-            Client client = clientService.getClientById(id);
-            if (client == null) {
-                return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
-            }
-            if (!client.isActive()) {
-                return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
-            }
-            client.setFirstName(firstName);
-            client.setLastName(lastName);
-            client.setEmail(email);
-            clientService.saveClient(client);
-            return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
+            return clientService.upDateClientFunction(id, firstName, lastName, email);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
     //------------------------------------------------------------------------------------
-
-
 
     //-----------------------------SERVLET-----------------------------------------------------------------------------------
     @PatchMapping("/update/{id}") // Con "PATCH" indico que voy a modificar una o algunas propiedades
@@ -136,24 +97,7 @@ public class ClientController {
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String email) {
         try {
-            Client client = clientService.getClientById(id);
-            if (client == null) {
-                return new ResponseEntity<>("Client not found with id " + id, HttpStatus.NOT_FOUND);
-            }
-            if (!client.isActive()) {
-                return new ResponseEntity<>("The client with id " + id + " is no longer a client", HttpStatus.NOT_FOUND);
-            }
-            if (firstName != null) {
-                client.setFirstName(firstName);
-            }
-            if (lastName != null) {
-                client.setLastName(lastName);
-            }
-            if (email != null) {
-                client.setEmail(email);
-            }
-            clientService.saveClient(client);
-            return new ResponseEntity<>(clientService.getClientDTO(client), HttpStatus.OK);
+            return clientService.partialUpdateClientFunction(id, firstName, lastName, email);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
 
     }
