@@ -30,6 +30,10 @@ public class AccountServiceImpl implements AccountService {
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
+    @Override
+    public Account getAccountById(Long id) {
+        return accountRepository.findById(id).orElse(null);
+    }
 
     @Override
     public boolean existAccountById(Long id) {
@@ -38,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountDTO> getAllAccountDTO() {
-        return getAllAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
+        return getAllAccounts().stream().map(account -> getAccountDTO(account)).collect(Collectors.toList());
     }
 
     @Override
@@ -46,10 +50,6 @@ public class AccountServiceImpl implements AccountService {
         return clientService.getAuthenticatedClientByEmail(authentication).getAccounts().stream().map(account -> getAccountDTO(account)).toList();
     }
 
-    @Override
-    public Account getAccountById(Long id) {
-        return accountRepository.findById(id).orElse(null);
-    }
 
     @Override
     public Account getAccountByNumber(String number) {

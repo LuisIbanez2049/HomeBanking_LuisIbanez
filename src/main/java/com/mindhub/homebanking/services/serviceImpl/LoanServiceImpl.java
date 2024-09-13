@@ -89,7 +89,7 @@ public class LoanServiceImpl implements LoanService {
             return new ResponseEntity<>("Installments can not be negative",HttpStatus.BAD_REQUEST);
         }
         if (loan.getPayments().stream().noneMatch(payment -> payment.equals(loanApplicationDTO.installment()))) {
-            return new ResponseEntity<>("Installment ["+loanApplicationDTO.installment()+"] is not a available", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Installment ["+loanApplicationDTO.installment()+"] is not available", HttpStatus.BAD_REQUEST);
         }
         if (loanApplicationDTO.destinyAccount().isBlank()) {
             return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
