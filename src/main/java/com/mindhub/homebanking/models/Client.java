@@ -22,6 +22,9 @@ public class Client {
 
     //--------------------------------------------------------------------------------------
     // Trayendo a la persona JPA automaticamente deberia traerme la o las cuentas asociadas
+    // Con "mappedBy = "client"" indico que la entidad "Account" es la dueña de la relación ya que se encarga de gestionar la clave foranea que apunta a "Client"
+    // Significa que la clase "Account" tiene un campo llamado "client" que define la relación. La columna de la clave foránea que conecta las dos tablas
+    // (Client y Account) está en la tabla Account, no en la de Client
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     Set<Account> accounts = new HashSet<>();
 
@@ -32,8 +35,6 @@ public class Client {
     @OneToMany(mappedBy = "client", fetch = FetchType.EAGER)
     private List<Card> cards = new ArrayList<>();
     //------------------------------------Sprint5---------------------------------------------
-
-
     //--------------------------------------------------------------------------------------
 
 

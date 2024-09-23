@@ -64,9 +64,10 @@ public class AuthController {
             // Genera un token JWT para el usuario autenticado.
             final String jwt = jwtUtilService.generateToken(userDetails);
             System.out.println("JWT generated: " + jwt); // Registra el token generado.
-
+            String fullName = clientService.getClientByEmail(userDetails.getUsername()).getFirstName() + " " + clientService.getClientByEmail(userDetails.getUsername()).getLastName();
+            String[] data = {jwt, fullName};
             // Retorna el token JWT en la respuesta.
-            return ResponseEntity.ok(jwt);
+            return ResponseEntity.ok(data);
         } catch (Exception e) {
             e.printStackTrace(); // Muestra cualquier excepción que ocurra.
             // Retorna un error si la autenticación falla.

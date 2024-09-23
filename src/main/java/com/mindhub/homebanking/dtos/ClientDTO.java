@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// Armo un DTO para transferir datos, en este caso todos los datos del cliente que reciba por parametro el constructor de este DTO
+// Armo un DTO para transferir datos, en este caso todos los datos del cliente que reciba por parametro en el constructor de este DTO
 // Este cliente ya va a estar previamente creado, ya existe
 public class ClientDTO {
     private Long id;

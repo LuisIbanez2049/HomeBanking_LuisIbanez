@@ -28,7 +28,7 @@ public class JwtUtilService {
         // declaro una variable de tipo final que van a contener todos los claims
         final Claims claims = extractAllClaims(token);
 
-        // Va a retornar una claim function que le vamos a pasar como parametro un claim en particular
+        // En el retorno utiliza la funcion "claimsTFunction" que sera aplicado al objeto Claims. Dependendiendo de la funcion va a extraer una claim en particular.
         return claimsTFunction.apply(claims);
     }
 
@@ -46,7 +46,7 @@ public class JwtUtilService {
     private String createToken(Map<String, Object> claims, String username) {
         return Jwts // de la clase Jwts usamos los siguientes metodos
                 .builder() // Inicia un objeto de tipo Jwt
-                .claims(claims) // Le pasamos los claims que recivimos por parametro
+                .claims(claims) // Le pasamos los claims que recivimos por parametro para agregar una claim personalizada al token
                 .subject(username) // Al subject le pasamos el email
                 .issuedAt(new Date(System.currentTimeMillis())) // Le pasamos la fecha de emicion del token
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TOKEN)) // Le pasamos la fecha de expiracion del token

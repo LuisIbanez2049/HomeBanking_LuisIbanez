@@ -45,7 +45,7 @@ public class WebConfiguration {
                 // Configura las reglas de autorización para las solicitudes HTTP.
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/api/auth/current", "/api/clients/current/accounts", "/api/clients/current/cards", "/api/transactions").hasRole("CLIENT")
+                                .requestMatchers("/api/auth/current", "/api/clients/current/accounts", "/api/clients/current/cards", "/api/transactions", "/api/clients/accounts/**").hasRole("CLIENT")
                                 .requestMatchers("/api/clients/","/api/clients/**","/api/clients/accounts/", "/api/clients/accounts/**", "/h2-console/**").hasRole("ADMIN")
                                 // Permite el acceso sin autenticación a las rutas especificadas (login, registro, y consola H2).
                                 .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()

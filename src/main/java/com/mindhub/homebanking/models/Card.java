@@ -1,13 +1,8 @@
 package com.mindhub.homebanking.models;
 
-import com.mindhub.homebanking.models.utils.GenerateRandomNumber;
 import jakarta.persistence.*;
-import org.hibernate.grammars.hql.HqlParser;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Random;
 
 @Entity
 public class Card {
@@ -15,7 +10,7 @@ public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String cardHolader;
+    private String cardHolder;
 
     @Enumerated(EnumType.STRING)
     private CardType type;
@@ -45,12 +40,12 @@ public class Card {
     }
 
     //--------------------------------------------------Getters and Setters--------------------------------------------------
-    public String getCardHolader() {
-        return cardHolader;
+    public String getCardHolder() {
+        return cardHolder;
     }
 
-    public void setCardHolader(String cardHolader) {
-        this.cardHolader = cardHolader;
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
     }
 
     public CardType getType() {
@@ -107,7 +102,7 @@ public class Card {
 
     public void setClient(Client client) {
         this.client = client;
-        this.cardHolader = client.getFirstName() + " " + client.getLastName();
+        this.cardHolder = client.getFirstName() + " " + client.getLastName();
     }
 
     public Long getId() {

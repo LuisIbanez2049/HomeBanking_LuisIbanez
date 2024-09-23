@@ -58,7 +58,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     );
 
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    // Establece la autenticación del usuario actual en el contexto de seguridad para gestionar la autenticacion y la autorizacion de los usuarios
+                    // Agrego la autenticación del usuario actual en el contexto de seguridad para gestionar la autenticacion y la autorizacion del usuario
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }

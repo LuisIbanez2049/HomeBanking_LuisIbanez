@@ -6,7 +6,6 @@ import com.mindhub.homebanking.models.CardType;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class CardDTO {
     private Long id;
@@ -20,7 +19,7 @@ public class CardDTO {
 
     public CardDTO(Card card) {
         this.id = card.getId();
-        this.cardHolader = card.getCardHolader();
+        this.cardHolader = card.getCardHolder();
         this.type = card.getType();
         this.color = card.getColor();
         this.number = card.getNumber();
