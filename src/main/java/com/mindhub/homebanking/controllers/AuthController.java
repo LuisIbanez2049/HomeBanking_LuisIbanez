@@ -54,7 +54,12 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
             System.out.println("Login attempt for: " + loginDTO.email()); // Registra el intento de inicio de sesión.
-
+            if (loginDTO.email().isBlank()) {
+                return new ResponseEntity<>("Please provide an email.", HttpStatus.BAD_REQUEST);
+            }
+            if (loginDTO.password().isBlank()) {
+                return new ResponseEntity<>("Please enter the password.", HttpStatus.BAD_REQUEST);
+            }
             // Autentica al usuario usando el email y la contraseña proporcionados.
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.email(), loginDTO.password()));
 
