@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 @Service
 public class LoanServiceImpl implements LoanService {
 
@@ -82,6 +85,9 @@ public class LoanServiceImpl implements LoanService {
         if (loanApplicationDTO.amount() > loan.getMaxAmount()) {
             return new ResponseEntity<>("You can not apply for a loan greater than: "+loan.getMaxAmount(),HttpStatus.BAD_REQUEST);
         }
+        if (loanApplicationDTO.destinyAccount().isBlank()) {
+            return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
+        }
         if (loanApplicationDTO.installment() == null || loanApplicationDTO.installment() == 0) {
             return new ResponseEntity<>("Installments must be specified",HttpStatus.BAD_REQUEST);
         }
@@ -91,10 +97,6 @@ public class LoanServiceImpl implements LoanService {
         if (loan.getPayments().stream().noneMatch(payment -> payment.equals(loanApplicationDTO.installment()))) {
             return new ResponseEntity<>("Installment ["+loanApplicationDTO.installment()+"] is not available", HttpStatus.BAD_REQUEST);
         }
-        if (loanApplicationDTO.destinyAccount().isBlank()) {
-            return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
-        }
-        //Account destinyAccount = accountService.getAccountByNumber(loanApplicationDTO.destinyAccount());
         if (destinyAccount == null) {
             return new ResponseEntity<>("Destiny account with number: "+loanApplicationDTO.destinyAccount()+ " does not exist or you typed an space character which is forbidden", HttpStatus.FORBIDDEN);
         }
@@ -176,8 +178,22 @@ public class LoanServiceImpl implements LoanService {
         ClientLoan newClientLoan = new ClientLoan(applicatedInterest(loanApplicationDTO) + loanApplicationDTO.amount(), loanApplicationDTO.installment());
         associateNewClientLoan(newClientLoan, client, loan);
         updateAuthenticatedClientAccount(loanApplicationDTO, destinyAccount, loan);
-        return new ResponseEntity<>(loan.getName()+" loan approved"+" || Required Amount: $"+loanApplicationDTO.amount()+" || You must pay an interest rate of "+
+        double number = loanApplicationDTO.amount()+applicatedInterest(loanApplicationDTO);
+        double numberInterest = applicatedInterest(loanApplicationDTO);
+        double numberRequiredAmount = loanApplicationDTO.amount();
+        // Obtener una instancia de NumberFormat para formatear con separadores de miles
+        NumberFormat formato = NumberFormat.getNumberInstance(Locale.US);
+
+        // Imprimir el número con separadores de miles
+        String numeroFormateado = formato.format(number);
+        String interest = formato.format(numberInterest);
+        String requiredAmount = formato.format((numberRequiredAmount));
+        return new ResponseEntity<>(loan.getName()+" loan approved"+"\nRequired Amount: $"+requiredAmount+" \nYou must pay an interest rate of "+
                 interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
-                " || Interest equivalent to: $"+applicatedInterest(loanApplicationDTO)+" || Total to pay: $"+ (loanApplicationDTO.amount()+applicatedInterest(loanApplicationDTO)), HttpStatus.CREATED);
+                "\nInterest equivalent to: $"+interest+"\nTotal to pay: $"+ numeroFormateado, HttpStatus.CREATED);
+//        return new ResponseEntity<>(loan.getName()+" loan approved"+"\nRequired Amount: $"+loanApplicationDTO.amount()+" \nYou must pay an interest rate of "+
+//                interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
+//              //  "\nInterest equivalent to: $"+applicatedInterest(loanApplicationDTO)+"\nTotal to pay: $"+ (loanApplicationDTO.amount()+applicatedInterest(loanApplicationDTO)), HttpStatus.CREATED);
+//                "\nInterest equivalent to: $"+applicatedInterest(loanApplicationDTO)+"\nTotal to pay: $"+ numeroFormateado, HttpStatus.CREATED);
     }
 }

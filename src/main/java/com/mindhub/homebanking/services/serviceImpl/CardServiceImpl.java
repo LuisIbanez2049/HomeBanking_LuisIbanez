@@ -28,10 +28,6 @@ public class CardServiceImpl implements CardService {
     @Autowired
     private ClientService clientService;
 
-//    @Override
-//    public Client getAuthenticatedClient(Authentication authentication) {
-//        return clientService.getClientByEmail(authentication.getName());
-//    }
     @Override
     public Card getCardByNumber(String number) {
         return cardRepository.findByNumber(number);
@@ -59,7 +55,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public ResponseEntity<String> responseParameterIsBlank(String parameter) {
-            return new ResponseEntity<>("Card "+parameter.toUpperCase()+" must be specified", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Card "+parameter.toUpperCase()+" must be specified.", HttpStatus.BAD_REQUEST);
     }
 
     @Override
@@ -99,22 +95,22 @@ public class CardServiceImpl implements CardService {
         try {
             cardType = CardType.valueOf(newCardDTO.type().toUpperCase());
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>("Not exist the type of card: ["+newCardDTO.type()+"] or you typed an space character which is forbidden", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Not exist the type of card: ["+newCardDTO.type()+"] or you typed an space character which is forbidden.", HttpStatus.BAD_REQUEST);
         }
 
         try {
             cardColor = CardColor.valueOf(newCardDTO.color().toUpperCase());
         } catch (IllegalArgumentException e) {
-            return  new ResponseEntity<>("Not exist the color card: ["+newCardDTO.color()+"] or you typed an space character which is forbidden",HttpStatus.BAD_REQUEST);
+            return  new ResponseEntity<>("Not exist the color card: ["+newCardDTO.color()+"] or you typed an space character which is forbidden.",HttpStatus.BAD_REQUEST);
         }
         if (hasMoreThan3TypeCard(cardType, authenticatedClient)) {
-            return new ResponseEntity<>("You cannot have more than 3 ["+newCardDTO.type().toUpperCase()+"] CARDS", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("YOU CAN NOT HAVE MORE THAN 3 ["+newCardDTO.type().toUpperCase()+"] CARDS", HttpStatus.FORBIDDEN);
         }
         if (authenticatedClientHasCardRequested(cardType, cardColor, authenticatedClient)) {
-            return new ResponseEntity<>("You already have an "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" card", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("YOU ALREADY HAVE A "+newCardDTO.color().toUpperCase()+ " "+ newCardDTO.type().toUpperCase()+" CARD", HttpStatus.BAD_REQUEST);
         }
         saveNewCardCreated(cardType, cardColor,authenticatedClient);
-        return new ResponseEntity<>("Created card", HttpStatus.CREATED);
+        return new ResponseEntity<>("CREATED CARD", HttpStatus.CREATED);
     }
 
     @Override
@@ -125,7 +121,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public ResponseEntity<?> getAuthenticatedClientCards(Authentication authentication) {
         if (authenticatedClientHaveCards(clientService.getAuthenticatedClientByEmail(authentication))) {
-            return new ResponseEntity<>("You do not have cards", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("YOU DONT'T HAVE CARDS", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(getCurrentClientCards(clientService.getAuthenticatedClientByEmail(authentication)), HttpStatus.OK);
     }
