@@ -40,9 +40,13 @@ public class LoanController {
         try {
             return loanService.getAvailableCurrentClientLoans(authentication);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
-
     }
-
+    @GetMapping("/currentClient")
+    public  ResponseEntity<?> getCurrentClientLoans(Authentication authentication){
+        try {
+            return loanService.getCurrentClientLoansFunction(authentication);
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+    }
     @Transactional
     @PostMapping("/")
     public ResponseEntity<?> applyForALoan(Authentication authentication, @RequestBody LoanApplicationDTO loanApplicationDTO){

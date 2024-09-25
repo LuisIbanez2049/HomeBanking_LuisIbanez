@@ -28,5 +28,6 @@ public interface LoanService {
     ResponseEntity<?> getAvailableCurrentClientLoans(Authentication authentication);
     double applicatedInterest(LoanApplicationDTO loanApplicationDTO);
     String customAnswer(int interestRateAccordingCantOfInstallments);
+    ResponseEntity<?> getCurrentClientLoansFunction(Authentication authentication);
 
 }

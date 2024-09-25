@@ -76,7 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void associateNewDebitTransaction(NewTransactionDTO newTransactionDTO, Account sourceAccount) {
-        Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(),"Account debited for: ["+newTransactionDTO.description()+"]. Funds were transferred to the account: ["+newTransactionDTO.destinyAccount()+"]", LocalDateTime.now());
+        Transaction newTransaction = new Transaction(TransactionType.DEBIT, newTransactionDTO.amount(),"Debited for: '"+newTransactionDTO.description()+"'.\n Funds were transferred to the account '"+newTransactionDTO.destinyAccount()+"'", LocalDateTime.now());
         sourceAccount.addTransaction(newTransaction);
         saveTransaction(newTransaction);
         double upDateBalanceSourceAccount = sourceAccount.getBalance() - newTransactionDTO.amount();
@@ -85,7 +85,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void associateNewCreditTransaction(NewTransactionDTO newTransactionDTO, Account destinyAccount) {
-        Transaction destinyTransaction = new Transaction(TransactionType.CREDIT, newTransactionDTO.amount(), "Account credited for: ["+newTransactionDTO.description()+"]. Funds were transferred from the account: ["+newTransactionDTO.sourceAccount()+"]", LocalDateTime.now());
+        Transaction destinyTransaction = new Transaction(TransactionType.CREDIT, newTransactionDTO.amount(), "Credited for: '"+newTransactionDTO.description()+"'.\n Funds were transferred from the account '"+newTransactionDTO.sourceAccount()+"'", LocalDateTime.now());
         destinyAccount.addTransaction(destinyTransaction);
         saveTransaction(destinyTransaction);
         double upDateBalanceDestinyAccount = destinyAccount.getBalance() + newTransactionDTO.amount();

@@ -142,7 +142,7 @@ public class LoanServiceImpl implements LoanService {
     public void updateAuthenticatedClientAccount(LoanApplicationDTO loanApplicationDTO, Account destinyAccount, Loan loan) {
         double interest = (loanApplicationDTO.amount() * interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())) / 100;
         double upDateBalanceDestinyAccount = destinyAccount.getBalance() + loanApplicationDTO.amount();
-        Transaction transaction = new Transaction(TransactionType.CREDIT, loanApplicationDTO.amount(), "Account credited for: ["+loan.getName()+"] loan", LocalDateTime.now());
+        Transaction transaction = new Transaction(TransactionType.CREDIT, loanApplicationDTO.amount(), "Credited for '"+loan.getName()+"' loan", LocalDateTime.now());
         destinyAccount.addTransaction(transaction);
         transactionService.saveTransaction(transaction);
         destinyAccount.setBalance(upDateBalanceDestinyAccount);
@@ -188,12 +188,22 @@ public class LoanServiceImpl implements LoanService {
         String numeroFormateado = formato.format(number);
         String interest = formato.format(numberInterest);
         String requiredAmount = formato.format((numberRequiredAmount));
-        return new ResponseEntity<>(loan.getName()+" loan approved"+"\nRequired Amount: $"+requiredAmount+" \nYou must pay an interest rate of "+
+        return new ResponseEntity<>(loan.getName()+" loan approved"+"\n\nRequired Amount: $"+requiredAmount+" \nYou must pay an interest rate of "+
                 interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
                 "\nInterest equivalent to: $"+interest+"\nTotal to pay: $"+ numeroFormateado, HttpStatus.CREATED);
 //        return new ResponseEntity<>(loan.getName()+" loan approved"+"\nRequired Amount: $"+loanApplicationDTO.amount()+" \nYou must pay an interest rate of "+
 //                interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
 //              //  "\nInterest equivalent to: $"+applicatedInterest(loanApplicationDTO)+"\nTotal to pay: $"+ (loanApplicationDTO.amount()+applicatedInterest(loanApplicationDTO)), HttpStatus.CREATED);
 //                "\nInterest equivalent to: $"+applicatedInterest(loanApplicationDTO)+"\nTotal to pay: $"+ numeroFormateado, HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<?> getCurrentClientLoansFunction(Authentication authentication) {
+        Client client = clientService.getClientByEmail(authentication.getName());
+        ClientDTO clientDTO = clientService.getClientDTO(client);
+        if (clientDTO.getLoans().isEmpty()) {
+            return new ResponseEntity<>("YOU DON'T HAVE APPLIED LOANS", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(clientDTO.getLoans(), HttpStatus.OK);
     }
 }
