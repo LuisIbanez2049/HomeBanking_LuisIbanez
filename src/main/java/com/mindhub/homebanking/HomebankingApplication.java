@@ -7,6 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -134,11 +136,21 @@ public class HomebankingApplication {
 
 			//-----------Loan de Melva----------------------------------------------------
 			ClientLoan clientLoan1 = new ClientLoan(400000,60);
+			clientLoan1.setDescription("""
+                    Required amount: $300.000
+                    You must pay an interest of 25% due to you selected more than 12 installments\s
+                    Interest equivalent to: $100.000\s
+                    Total to pay: $400.000""");
 			melba.addClientLoan(clientLoan1);
 			mortage.addClientLoan(clientLoan1);
 			clienLoanRepository.save(clientLoan1);
 
 			ClientLoan clientLoan2 = new ClientLoan(50000,12);
+			clientLoan2.setDescription("""
+                    Required amount: $40.000
+                    You must pay an interest of 20% due to you selected 12 installments\s
+                    Interest equivalent to: $10.000\s
+                    Total to pay: $50.000""");
 			melba.addClientLoan(clientLoan2);
 			personal.addClientLoan(clientLoan2);
 			clienLoanRepository.save(clientLoan2);
@@ -146,11 +158,21 @@ public class HomebankingApplication {
 
 			//-----------Loan de Luis----------------------------------------------------
 			ClientLoan clientLoan3 = new ClientLoan(100000,24);
+			clientLoan3.setDescription("""
+                    Required amount: $75.000
+                    You must pay an interest of 25% due to you selected more than 12 installments\s
+                    Interest equivalent to: $25.000\s
+                    Total to pay: $100.000""");
 			luis.addClientLoan(clientLoan3);
 			personal.addClientLoan(clientLoan3);
 			clienLoanRepository.save(clientLoan3);
 
 			ClientLoan clientLoan4 = new ClientLoan(200000,36);
+			clientLoan4.setDescription("""
+                    Required amount: $150.000
+                    You must pay an interest of 25% due to you selected more than 12 installments\s
+                    Interest equivalent to: $50.000\s
+                    Total to pay: $200.000""");
 			luis.addClientLoan(clientLoan4);
 			automotive.addClientLoan(clientLoan4);
 			clienLoanRepository.save(clientLoan4);

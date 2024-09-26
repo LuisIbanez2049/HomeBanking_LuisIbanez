@@ -11,6 +11,7 @@ public class ClientLoan {
 
     private double amount;
     private Integer payments;
+    String description;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id")
@@ -63,5 +64,13 @@ public class ClientLoan {
 
     public Long getId() {
         return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

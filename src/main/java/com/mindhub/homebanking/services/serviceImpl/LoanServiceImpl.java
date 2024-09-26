@@ -188,9 +188,15 @@ public class LoanServiceImpl implements LoanService {
         String numeroFormateado = formato.format(number);
         String interest = formato.format(numberInterest);
         String requiredAmount = formato.format((numberRequiredAmount));
-        return new ResponseEntity<>(loan.getName()+" loan approved"+"\n\nRequired Amount: $"+requiredAmount+" \nYou must pay an interest rate of "+
+        String description ="Required Amount: $"+requiredAmount+" \nYou must pay an interest rate of "+
                 interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
-                "\nInterest equivalent to: $"+interest+"\nTotal to pay: $"+ numeroFormateado, HttpStatus.CREATED);
+                "\nInterest equivalent to: $"+interest+"\nTotal to pay: $"+ numeroFormateado;
+
+        newClientLoan.setDescription(description);
+        return new ResponseEntity<>(loan.getName().toUpperCase()+" LOAN APPROVED", HttpStatus.CREATED);
+//        return new ResponseEntity<>(loan.getName()+" loan approved"+"\nRequired Amount: $"+requiredAmount+" \nYou must pay an interest rate of "+
+//                interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
+//                "\nInterest equivalent to: $"+interest+"\nTotal to pay: $"+ numeroFormateado, HttpStatus.CREATED);
 //        return new ResponseEntity<>(loan.getName()+" loan approved"+"\nRequired Amount: $"+loanApplicationDTO.amount()+" \nYou must pay an interest rate of "+
 //                interestRateAccordingCantOfInstallments(loanApplicationDTO.installment())+"% "+customAnswer(loanApplicationDTO.installment()) +
 //              //  "\nInterest equivalent to: $"+applicatedInterest(loanApplicationDTO)+"\nTotal to pay: $"+ (loanApplicationDTO.amount()+applicatedInterest(loanApplicationDTO)), HttpStatus.CREATED);
