@@ -76,6 +76,9 @@ public class LoanServiceImpl implements LoanService {
         if (clientDTO.getLoans().stream().anyMatch(eachLoan -> eachLoan.getLoanId().equals(loanApplicationDTO.id()))) {
             return new ResponseEntity<>("You already have a loan with the name ["+loan.getName()+"] and the id ["+loanApplicationDTO.id()+"]",HttpStatus.BAD_REQUEST);
         }
+        if (loanApplicationDTO.destinyAccount().isBlank()) {
+            return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
+        }
         if (loanApplicationDTO.amount() == 0) {
             return new ResponseEntity<>("Amount must be specified",HttpStatus.BAD_REQUEST);
         }
@@ -84,9 +87,6 @@ public class LoanServiceImpl implements LoanService {
         }
         if (loanApplicationDTO.amount() > loan.getMaxAmount()) {
             return new ResponseEntity<>("You can not apply for a loan greater than: "+loan.getMaxAmount(),HttpStatus.BAD_REQUEST);
-        }
-        if (loanApplicationDTO.destinyAccount().isBlank()) {
-            return new ResponseEntity<>("Destiny account must be specified",HttpStatus.BAD_REQUEST);
         }
         if (loanApplicationDTO.installment() == null || loanApplicationDTO.installment() == 0) {
             return new ResponseEntity<>("Installments must be specified",HttpStatus.BAD_REQUEST);
