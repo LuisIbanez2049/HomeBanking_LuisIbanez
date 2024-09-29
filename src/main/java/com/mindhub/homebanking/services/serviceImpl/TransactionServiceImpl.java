@@ -35,17 +35,17 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public ResponseEntity<?> makeValidations(Client client, Account sourceAccount, Account destinyAccount, NewTransactionDTO newTransactionDTO) {
-        if (newTransactionDTO.destinyAccount().isBlank()) {
-            return new ResponseEntity<>("Destiny account must be specified.", HttpStatus.BAD_REQUEST);
-        }
-        if (destinyAccount == null) {
-            return new ResponseEntity<>("Destiny account: "+newTransactionDTO.destinyAccount()+ " does not exist or you typed an space character which is forbidden.", HttpStatus.FORBIDDEN);
-        }
         if (newTransactionDTO.sourceAccount().isBlank()) {
             return new ResponseEntity<>("Source account must be specified.", HttpStatus.BAD_REQUEST);
         }
         if (sourceAccount == null) {
             return new ResponseEntity<>("Source account: "+newTransactionDTO.sourceAccount()+ " does not exist or you typed an space character which is forbidden.", HttpStatus.FORBIDDEN);
+        }
+        if (newTransactionDTO.destinyAccount().isBlank()) {
+            return new ResponseEntity<>("Destiny account must be specified.", HttpStatus.BAD_REQUEST);
+        }
+        if (destinyAccount == null) {
+            return new ResponseEntity<>("Destiny account: "+newTransactionDTO.destinyAccount()+ " does not exist or you typed an space character which is forbidden.", HttpStatus.FORBIDDEN);
         }
         if (client.getAccounts().stream().noneMatch(account -> account.getNumber().equals(newTransactionDTO.sourceAccount()))) {
             return new ResponseEntity<>("You do not have an account with number: "+newTransactionDTO.sourceAccount(), HttpStatus.FORBIDDEN);
@@ -59,9 +59,6 @@ public class TransactionServiceImpl implements TransactionService {
         if (newTransactionDTO.amount() < 0) {
             return new ResponseEntity<>("Amount can not be negative.", HttpStatus.BAD_REQUEST);
         }
-        if (newTransactionDTO.description().isBlank()) {
-            return new ResponseEntity<>("Description must be specified.", HttpStatus.BAD_REQUEST);
-        }
 
         if (sourceAccount.getBalance() < newTransactionDTO.amount()) {
             // Obtener una instancia de NumberFormat para formatear con separadores de miles
@@ -70,6 +67,9 @@ public class TransactionServiceImpl implements TransactionService {
             // Imprimir el número con separadores de miles
             String numeroFormateado = formato.format(sourceAccount.getBalance());
             return new ResponseEntity<>("You don't have enough funds to carry out this transaction. Your balance is: $"+numeroFormateado, HttpStatus.BAD_REQUEST);
+        }
+        if (newTransactionDTO.description().isBlank()) {
+            return new ResponseEntity<>("Description must be specified.", HttpStatus.BAD_REQUEST);
         }
         return null;
     }
