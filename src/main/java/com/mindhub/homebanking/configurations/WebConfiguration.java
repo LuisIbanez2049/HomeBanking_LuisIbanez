@@ -48,7 +48,7 @@ public class WebConfiguration {
                                 .requestMatchers("/api/auth/current", "/api/clients/current/accounts", "/api/loans/currentClient" ,"/api/clients/current/cards", "/api/transactions", "/api/clients/accounts/**").hasRole("CLIENT")
                                 .requestMatchers("/api/clients/","/api/clients/**","/api/clients/accounts/", "/api/clients/accounts/**", "/h2-console/**").hasRole("ADMIN")
                                 // Permite el acceso sin autenticación a las rutas especificadas (login, registro, y consola H2).
-                                .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                                .requestMatchers("/api/auth/login", "/api/auth/register", "/api/external/payment").permitAll()
                                 // Permite el acceso sin autenticación a cualquier otra solicitud (esto puede ser modificado según los requisitos).
                                 .anyRequest().authenticated()
 //                                .anyRequest().permitAll()
