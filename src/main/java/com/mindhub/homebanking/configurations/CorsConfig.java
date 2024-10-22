@@ -14,7 +14,7 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173", "https://homebankingfrontenddeploy.onrender.com/", "https://homebanking-luisibanez-deply-back.onrender.com", "https://nuevorepofrontentvoyager.onrender.com/"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173", "https://homebankingfrontenddeploy.onrender.com", "https://homebanking-luisibanez-deply-back.onrender.com", "https://nuevorepofrontentvoyager.onrender.com"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
 
