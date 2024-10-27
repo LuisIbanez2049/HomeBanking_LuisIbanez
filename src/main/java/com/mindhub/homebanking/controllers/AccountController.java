@@ -60,10 +60,10 @@ public class AccountController {
             return accountService.createAccountForAuthenticatedClient(authentication);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
-    @DeleteMapping("/currentAccount/delete")
-    public ResponseEntity<?> deleteClientAccount (Authentication authentication, @RequestBody RecordDeleteAccount recordDeleteAccount){
+    @DeleteMapping("/currentAccount/delete/{id}")
+    public ResponseEntity<?> deleteClientAccount (Authentication authentication, @PathVariable Long id){
         try {
-            return accountService.deleteClientAccountFunction(authentication, recordDeleteAccount.id());
+            return accountService.deleteClientAccountFunction(authentication, id);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 
