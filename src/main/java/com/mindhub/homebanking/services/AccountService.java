@@ -22,4 +22,5 @@ public interface AccountService {
     boolean authenticatedClientHasLessThan3Accounts(Client authenticatedClient);
     void asociateNewAccountToClient(Client authenticatedClient);
     ResponseEntity<?> createAccountForAuthenticatedClient(Authentication authentication);
+    ResponseEntity<?> deleteClientAccountFunction(Authentication authentication, Long id);
 }

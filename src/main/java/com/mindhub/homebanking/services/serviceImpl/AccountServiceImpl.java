@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,7 +48,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<AccountDTO> getAllAccountDTOfromAuthenticationClient(Authentication authentication) {
-        return clientService.getAuthenticatedClientByEmail(authentication).getAccounts().stream().map(account -> getAccountDTO(account)).toList();
+        List<Account> accounts = clientService.getAuthenticatedClientByEmail(authentication).getAccounts().stream().filter(account -> account.isActive()).toList();
+        return accounts.stream().map(account -> getAccountDTO(account)).toList();
     }
 
 
@@ -104,5 +106,18 @@ public class AccountServiceImpl implements AccountService {
             return new ResponseEntity<>("ACCOUNT CREATED SUCCESSFULLY", HttpStatus.CREATED);
         }
         return new ResponseEntity<>("YOU CAN'T HAVE MORE THAN 3 ACCOUNTS", HttpStatus.FORBIDDEN);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteClientAccountFunction(Authentication authentication, Long id) {
+        Client client = clientService.getClientByEmail(authentication.getName());
+        Set<Account> accounts = client.getAccounts().stream().filter(account -> account.getId().equals(id)).collect(Collectors.toSet());
+        Account accountById = accounts.stream().findFirst().orElse(null);
+        if (accountById == null) {
+            return new ResponseEntity<>("ACCOUNT NOT FOUND", HttpStatus.NOT_FOUND);
+        }
+        accountById.setActive(false);
+        saveAccount(accountById);
+        return new ResponseEntity<>("ACCOUNT SUCCESSFULLY DELETED", HttpStatus.OK);
     }
 }

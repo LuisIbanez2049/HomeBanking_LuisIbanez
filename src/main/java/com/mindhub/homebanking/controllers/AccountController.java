@@ -2,6 +2,7 @@ package com.mindhub.homebanking.controllers;
 
 import com.mindhub.homebanking.dtos.AccountDTO;
 import com.mindhub.homebanking.dtos.ClientDTO;
+import com.mindhub.homebanking.dtos.RecordDeleteAccount;
 import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.models.utils.GenerateAccountNumber;
@@ -57,6 +58,12 @@ public class AccountController {
     public ResponseEntity <?> createClientAccounts(Authentication authentication) {
         try {
             return accountService.createAccountForAuthenticatedClient(authentication);
+        } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
+    }
+    @DeleteMapping("/currentAccount/delete")
+    public ResponseEntity<?> deleteClientAccount (Authentication authentication, @RequestBody RecordDeleteAccount recordDeleteAccount){
+        try {
+            return accountService.deleteClientAccountFunction(authentication, recordDeleteAccount.id());
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
     }
 

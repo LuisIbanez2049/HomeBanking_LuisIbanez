@@ -16,6 +16,7 @@ public class Account {
     private String number;
     private LocalDateTime creationDate;
     private double balance;
+    private boolean isActive = true;
 
     //---------------------------------Relacion entre "Account" and "Client"-----------------------------------------------------------
     // Indico que esta clase va a tener una relacion de muchos a uno con "client", osea muchas cuentas van a pertenecer a un cliente
@@ -86,6 +87,14 @@ public class Account {
 
     public Set<Transaction> getTransactions() {
         return transactions;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
     //------------------------------------------------------------------------------------
 

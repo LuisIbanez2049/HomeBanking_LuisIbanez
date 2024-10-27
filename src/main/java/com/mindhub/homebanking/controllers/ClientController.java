@@ -62,7 +62,6 @@ public class ClientController {
         try {
             return clientService.createClientFunction(firstName, lastName, email);
         } catch (Exception e) { return new ResponseEntity<>("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR); }
-
     }
     //------------------------------------------------------------------------------------
 
