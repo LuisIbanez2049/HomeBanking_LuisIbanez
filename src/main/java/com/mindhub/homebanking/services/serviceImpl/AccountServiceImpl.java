@@ -101,11 +101,20 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public ResponseEntity<?> createAccountForAuthenticatedClient(Authentication authentication) {
         Client authenticatedClient = clientService.getAuthenticatedClientByEmail(authentication);
+        List<Account> accounts = clientService.getAuthenticatedClientByEmail(authentication).getAccounts().stream().filter(account -> account.isActive()).toList();
         if (authenticatedClientHasLessThan3Accounts(authenticatedClient)) {
             asociateNewAccountToClient(authenticatedClient);
             return new ResponseEntity<>("ACCOUNT CREATED SUCCESSFULLY", HttpStatus.CREATED);
+        } else if (accounts.size() == 3) {
+            return new ResponseEntity<>("YOU CAN'T HAVE MORE THAN 3 ACCOUNTS", HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>("YOU CAN'T HAVE MORE THAN 3 ACCOUNTS", HttpStatus.FORBIDDEN);
+            Account account = clientService.getAuthenticatedClientByEmail(authentication).getAccounts().stream().filter(account1 -> !account1.isActive()).findFirst().orElse(null);
+
+                account.setActive(true);
+                saveAccount(account);
+                return new ResponseEntity<>("ACCOUNT CREATED SUCCESSFULLY", HttpStatus.CREATED);
+
+
     }
 
     @Override
