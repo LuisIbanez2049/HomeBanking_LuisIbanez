@@ -168,10 +168,6 @@ public class ClientController {
     }
     //---------------------------------------------------------------------------------------------------------------------------
 
-//    @GetMapping("/test")
-//    public ResponseEntity<?> test (Authentication authentication){
-//        String mail = authentication.getname
-//    }
 
 }
 
